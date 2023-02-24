@@ -30,6 +30,8 @@ class Program
     );
 
     var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.");
+    rootCommand.AddOption(apiKeyOption);
+    rootCommand.AddOption(appIdOption);
     rootCommand.AddOption(configFileOption);
     rootCommand.AddOption(logLevelOption);
     rootCommand.SetHandler(Run, apiKeyOption, appIdOption, configFileOption, logLevelOption);
@@ -37,7 +39,7 @@ class Program
     return await rootCommand.InvokeAsync(args);
   }
 
-  static Task<int> Run(string apiKeyOption, string appIdOption, string configFileOption, LogEventLevel logLevelOption)
+  static async Task<int> Run(string apiKeyOption, string appIdOption, string configFileOption, LogEventLevel logLevelOption)
   {
     // setup logger
     // check for config
@@ -49,7 +51,6 @@ class Program
     // get a page of records
     // for each record get the file info for each file in each attachment or image field
     // for each file write it's file info to a csv file
-
-    return new Task<int>(() => 0);
+    return 0;
   }
 }
