@@ -1,1 +1,6 @@
-﻿Console.WriteLine("Hello, World!");
+﻿class Program
+{
+  static async Task<int> Main(string[] args)
+  {
+  }
+}
