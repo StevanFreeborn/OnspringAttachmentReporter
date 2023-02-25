@@ -7,7 +7,7 @@ namespace OnspringAttachmentReporter.Models;
 
 class Runner
 {
-  static async Task<int> Run(string? apiKeyOption, int? appIdOption, string? configFileOption, LogEventLevel logLevelOption)
+  public static async Task<int> Run(string? apiKeyOption, int? appIdOption, string? configFileOption, LogEventLevel logLevelOption)
   {
     var logPath = LoggerFactory.GetLogPath();
     Log.Logger = LoggerFactory.CreateLogger(logPath, logLevelOption);
