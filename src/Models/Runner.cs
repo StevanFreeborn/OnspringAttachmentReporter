@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -29,7 +28,7 @@ class Runner
     return 0;
   }
 
-  static Context? GetContext(string? apiKeyOption, int? appIdOption, string? configFileOption)
+  internal static Context? GetContext(string? apiKeyOption, int? appIdOption, string? configFileOption)
   {
     if (
       string.IsNullOrWhiteSpace(apiKeyOption) is false &&
@@ -41,20 +40,28 @@ class Runner
 
     if (string.IsNullOrWhiteSpace(configFileOption) is false)
     {
-      var config = new ConfigurationBuilder()
-        .AddJsonFile(configFileOption!)
-        .Build();
-
-      var apiKey = config["ApiKey"];
-      var appId = config["AppId"];
-
-      if (
-        apiKey is not null &&
-        appId is not null &&
-        int.TryParse(appId, out var appIdInt)
-      )
+      try
       {
-        return new Context(apiKey, appIdInt);
+        var config = new ConfigurationBuilder()
+          .AddJsonFile(configFileOption!)
+          .Build();
+
+        var apiKey = config["ApiKey"];
+        var appId = config["AppId"];
+
+        if (
+          apiKey is not null &&
+          appId is not null &&
+          int.TryParse(appId, out var appIdInt)
+        )
+        {
+          return new Context(apiKey, appIdInt);
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.Error("Unable to get context from config file. {Exception}", ex);
+        return null;
       }
     }
 
