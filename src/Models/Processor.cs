@@ -1,15 +1,30 @@
-using OnspringAttachmentReporter.Services;
+using Onspring.API.SDK.Enums;
+using Onspring.API.SDK.Models;
+using OnspringAttachmentReporter.Interfaces;
 
 namespace OnspringAttachmentReporter.Models;
 
-class Processor
+class Processor : IProcessor
 {
   internal readonly int _appId;
-  internal readonly OnspringService _onspringService;
+  internal readonly IOnspringService _onspringService;
 
-  public Processor(Context context)
+  public Processor(IOnspringService onspringService)
   {
-    _appId = context.AppId;
-    _onspringService = new OnspringService(context.ApiKey);
+    _onspringService = onspringService;
+  }
+
+  public async Task<List<Field>?> GetFileFields()
+  {
+    var fields = await _onspringService.GetAllFields();
+
+    if (fields is null)
+    {
+      return null;
+    }
+
+    return fields
+    .Where(f => f.Type == FieldType.Attachment || f.Type == FieldType.Image)
+    .ToList();
   }
 }

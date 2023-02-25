@@ -42,6 +42,7 @@ public class RunnerTests
   [Fact]
   public async Task Run_WhenCalledWithApiKeyAndAppId_ShouldReturnZero()
   {
+
     var result = await Runner.Run("apiKey", 1, null, LogEventLevel.Verbose);
     result.Should().Be(0);
   }

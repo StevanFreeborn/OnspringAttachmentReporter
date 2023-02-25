@@ -7,28 +7,32 @@ public class OnspringServiceTests
   [Fact]
   public void OnspringService_WhenConstructorIsCalledWithEmptyApiKey_ShouldThrowArgumentException()
   {
-    Action action = () => { _ = new OnspringService(string.Empty); };
+    var context = new Context(string.Empty, 1);
+    Action action = () => { _ = new OnspringService(context); };
     action.Should().Throw<ArgumentException>();
   }
 
   [Fact]
   public void OnspringService_WhenConstructorIsCalledWithWhiteSpaceApiKey_ShouldThrowArgumentException()
   {
-    Action action = () => { _ = new OnspringService(" "); };
+    var context = new Context(" ", 1);
+    Action action = () => { _ = new OnspringService(context); };
     action.Should().Throw<ArgumentException>();
   }
 
   [Fact]
   public void OnspringService_WhenConstructorIsCalledWithNullApiKey_ShouldThrowArgumentException()
   {
-    Action action = () => { _ = new OnspringService(null); };
+    var context = new Context(null, 1);
+    Action action = () => { _ = new OnspringService(context); };
     action.Should().Throw<ArgumentException>();
   }
 
   [Fact]
   public void OnspringService_WhenConstructorIsCalledWithApiKey_ShouldReturnANewInstance()
   {
-    var onspringService = new OnspringService("apiKey");
+    var context = new Context("apiKey", 1);
+    var onspringService = new OnspringService(context);
     onspringService.Should().NotBeNull();
     onspringService.Should().BeOfType<OnspringService>();
     onspringService._client.Should().NotBeNull();

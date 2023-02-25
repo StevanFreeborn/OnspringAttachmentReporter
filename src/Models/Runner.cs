@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using OnspringAttachmentReporter.Services;
 using Serilog;
 using Serilog.Events;
 
@@ -19,7 +20,21 @@ class Runner
       return 1;
     }
 
-    var processor = new Processor(context);
+    var service = new OnspringService(context);
+    var processor = new Processor(service);
+    var fileFields = await processor.GetFileFields();
+
+    if (fileFields is null)
+    {
+      Log.Warning("Unable to get file fields.");
+      return 2;
+    }
+
+    if (fileFields.Count == 0)
+    {
+      Log.Warning("No file fields found.");
+      return 3;
+    }
 
     // get all attachment or image fields
     // get a page of records
