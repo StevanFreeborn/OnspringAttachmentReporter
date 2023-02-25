@@ -4,8 +4,8 @@ namespace OnspringAttachmentReporter.Models;
 
 class Processor
 {
-  private readonly int _appId;
-  private readonly OnspringService _onspringService;
+  internal readonly int _appId;
+  internal readonly OnspringService _onspringService;
 
   public Processor(Context context)
   {
