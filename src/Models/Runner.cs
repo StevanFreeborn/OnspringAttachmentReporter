@@ -52,7 +52,7 @@ class Runner
         if (
           apiKey is not null &&
           appId is not null &&
-          int.TryParse(appId, out var appIdInt)
+          int.TryParse(appId, out var appIdInt) is true
         )
         {
           return new Context(apiKey, appIdInt);
