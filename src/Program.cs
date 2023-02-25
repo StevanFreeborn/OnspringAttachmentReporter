@@ -1,26 +1,27 @@
 ﻿using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
+using OnspringAttachmentReporter.Models;
 using Serilog.Events;
 
 class Program
 {
-  static async Task<int> Main(string[] args)
+  [ExcludeFromCodeCoverage]
+  private static async Task<int> Main(string[] args)
   {
     var apiKeyOption = new Option<string>(
       aliases: new string[] { "--apikey", "-k" },
-      description: "The API key that will be used to authenticate with Onspring.",
-      getDefaultValue: () => null
+      description: "The API key that will be used to authenticate with Onspring."
     );
 
-    var appIdOption = new Option<string>(
-      aliases: new string[] { "--appid", "-a" },
+    var appIdOption = new Option<int?>(
+      aliases: new string[] { "--appId", "-a" },
       description: "The ID of the Onspring app that will be reported on.",
       getDefaultValue: () => null
     );
 
     var configFileOption = new Option<string>(
       aliases: new string[] { "--config", "-c" },
-      description: "The path to the file that specifies configuration for the reporter.",
-      getDefaultValue: () => null
+      description: "The path to the file that specifies configuration for the reporter."
     );
 
     var logLevelOption = new Option<LogEventLevel>(
@@ -34,23 +35,8 @@ class Program
     rootCommand.AddOption(appIdOption);
     rootCommand.AddOption(configFileOption);
     rootCommand.AddOption(logLevelOption);
-    rootCommand.SetHandler(Run, apiKeyOption, appIdOption, configFileOption, logLevelOption);
+    rootCommand.SetHandler(Runner.Run, apiKeyOption, appIdOption, configFileOption, logLevelOption);
 
     return await rootCommand.InvokeAsync(args);
-  }
-
-  static async Task<int> Run(string apiKeyOption, string appIdOption, string configFileOption, LogEventLevel logLevelOption)
-  {
-    // setup logger
-    // check for config
-    // needs to come from command line options or config file
-    // command line options will supersede config file if both are specified
-    // if not found, log error and exit
-
-    // get all attachment or image fields
-    // get a page of records
-    // for each record get the file info for each file in each attachment or image field
-    // for each file write it's file info to a csv file
-    return 0;
   }
 }
