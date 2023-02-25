@@ -60,7 +60,7 @@ class Runner
       }
       catch (Exception ex)
       {
-        Log.Error("Unable to get context from config file. {Exception}", ex);
+        Log.Error("Unable to get context from config file. {Exception}", ex.Message);
         return null;
       }
     }
