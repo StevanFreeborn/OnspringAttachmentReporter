@@ -49,8 +49,7 @@ public static class Executor
     return result;
   }
 
-  [ExcludeFromCodeCoverage]
-  private static Context? GetContext(string? apiKeyOption, int? appIdOption, string? configFileOption, string outputDirectory)
+  internal static Context? GetContext(string? apiKeyOption, int? appIdOption, string? configFileOption, string outputDirectory)
   {
     if (
       string.IsNullOrWhiteSpace(apiKeyOption) is false &&

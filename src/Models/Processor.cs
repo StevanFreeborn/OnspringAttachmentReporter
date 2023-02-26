@@ -90,8 +90,7 @@ class Processor : IProcessor
     _reportService.WriteReport(fileInfos);
   }
 
-  [ExcludeFromCodeCoverage]
-  private static List<FileInfoRequest> GetFileRequestsFromRecord(ResultRecord record, List<Field> fileFields)
+  internal static List<FileInfoRequest> GetFileRequestsFromRecord(ResultRecord record, List<Field> fileFields)
   {
     var fileRequests = new List<FileInfoRequest>();
 
@@ -107,6 +106,11 @@ class Processor : IProcessor
       if (field.Type == FieldType.Attachment)
       {
         var attachments = fieldValue.AsAttachmentList();
+
+        if (IsAllAttachmentsField(record, fileFields, attachments))
+        {
+          continue;
+        }
 
         foreach (var attachment in attachments)
         {
@@ -147,8 +151,24 @@ class Processor : IProcessor
     return fileRequests;
   }
 
-  [ExcludeFromCodeCoverage]
-  private async Task<FileInfo> GetFileInfo(FileInfoRequest fileRequest)
+  internal static bool IsAllAttachmentsField(ResultRecord record, List<Field> fileFields, List<AttachmentFile> attachmentFieldValue)
+  {
+    var attachmentFieldIds = fileFields
+    .Where(f => f.Type == FieldType.Attachment)
+    .Select(f => f.Id)
+    .ToList();
+
+    var attachmentIds = record.FieldData
+    .Where(f => attachmentFieldIds.Contains(f.FieldId))
+    .SelectMany(f => f.AsAttachmentList())
+    .Select(f => f.FileId)
+    .Distinct()
+    .ToList();
+
+    return attachmentFieldValue.Select(f => f.FileId).Distinct().SequenceEqual(attachmentIds);
+  }
+
+  internal async Task<FileInfo> GetFileInfo(FileInfoRequest fileRequest)
   {
     _logger.Debug(
       "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",

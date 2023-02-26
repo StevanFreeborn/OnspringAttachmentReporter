@@ -18,8 +18,7 @@ static class LoggerFactory
     .CreateLogger();
   }
 
-  [ExcludeFromCodeCoverage]
-  private static string GetLogPath(string outputDirectory)
+  internal static string GetLogPath(string outputDirectory)
   {
     var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
     return Path.Combine(currentDirectory, outputDirectory, "log.json");

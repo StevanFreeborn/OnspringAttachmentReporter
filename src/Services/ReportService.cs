@@ -21,8 +21,7 @@ public class ReportService : IReportService
     csv.WriteRecords(fileInfos);
   }
 
-  [ExcludeFromCodeCoverage]
-  private string GetReportPath()
+  internal string GetReportPath()
   {
     var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
     return Path.Combine(currentDirectory, _context.OutputDirectory, "attachment_report.csv");
