@@ -73,7 +73,7 @@ class Processor : IProcessor
       totalPages = res.TotalPages;
       pagingRequest.PageNumber++;
       currentPage = pagingRequest.PageNumber;
-    } while (currentPage < totalPages);
+    } while (currentPage <= totalPages);
 
     return fileRequests;
   }
@@ -82,45 +82,98 @@ class Processor : IProcessor
   {
     var fileInfos = new List<FileInfo>();
 
-    await Parallel.ForEachAsync(fileRequests, async (fileRequest, token) =>
+    foreach (var request in fileRequests)
     {
       _logger.Debug(
         "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
-        fileRequest.RecordId,
-        fileRequest.FieldId,
-        fileRequest.FileId
+        request.RecordId,
+        request.FieldId,
+        request.FileId
       );
 
-      var res = await _onspringService.GetFile(fileRequest);
+      var res = await _onspringService.GetFile(request);
 
       if (res == null)
       {
         _logger.Warning(
-          "No file info found for record {RecordId}, field {FieldId}, file {FileId}.",
-          fileRequest.RecordId,
-          fileRequest.FieldId,
-          fileRequest.FileId
+          "Unable to get file info for record {RecordId}, field {FieldId}, file {FileId}.",
+          request.RecordId,
+          request.FieldId,
+          request.FileId
         );
-        return;
+
+        fileInfos.Add(
+          new FileInfo(
+            request.RecordId,
+            request.FieldId,
+            request.FieldName,
+            request.FileId,
+            "Error: Unable to get file info",
+            0
+          )
+        );
+        continue;
       }
 
       _logger.Debug(
         "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
-        fileRequest.RecordId,
-        fileRequest.FieldId,
-        fileRequest.FileId
+        request.RecordId,
+        request.FieldId,
+        request.FileId
       );
 
-      var fileInfo = new FileInfo(
-        fileRequest.RecordId,
-        fileRequest.FieldId,
-        fileRequest.FileId,
-        res.FileName,
-        Convert.ToDecimal(res.ContentLength)
+      fileInfos.Add(
+        new FileInfo(
+          request.RecordId,
+          request.FieldId,
+          request.FieldName,
+          request.FileId,
+          res.FileName,
+          Convert.ToDecimal(res.ContentLength)
+        )
       );
+    }
 
-      fileInfos.Add(fileInfo);
-    });
+    // await Parallel.ForEachAsync(fileRequests, async (fileRequest, token) =>
+    // {
+    //   _logger.Debug(
+    //     "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
+    //     fileRequest.RecordId,
+    //     fileRequest.FieldId,
+    //     fileRequest.FileId
+    //   );
+
+    //   var res = await _onspringService.GetFile(fileRequest);
+
+    //   if (res == null)
+    //   {
+    //     _logger.Warning(
+    //       "No file info found for record {RecordId}, field {FieldId}, file {FileId}.",
+    //       fileRequest.RecordId,
+    //       fileRequest.FieldId,
+    //       fileRequest.FileId
+    //     );
+    //     return;
+    //   }
+
+    //   _logger.Debug(
+    //     "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
+    //     fileRequest.RecordId,
+    //     fileRequest.FieldId,
+    //     fileRequest.FileId
+    //   );
+
+    //   var fileInfo = new FileInfo(
+    //     fileRequest.RecordId,
+    //     fileRequest.FieldId,
+    //     fileRequest.FieldName,
+    //     fileRequest.FileId,
+    //     res.FileName,
+    //     Convert.ToDecimal(res.ContentLength)
+    //   );
+
+    //   fileInfos.Add(fileInfo);
+    // });
 
     return fileInfos;
   }
@@ -155,7 +208,14 @@ class Processor : IProcessor
             continue;
           }
 
-          fileRequests.Add(new FileInfoRequest(record.RecordId, fieldValue.FieldId, attachment.FileId));
+          fileRequests.Add(
+            new FileInfoRequest(
+              record.RecordId,
+              fieldValue.FieldId,
+              field.Name,
+              attachment.FileId
+            )
+          );
         }
       }
 
@@ -165,7 +225,14 @@ class Processor : IProcessor
 
         foreach (var file in files)
         {
-          fileRequests.Add(new FileInfoRequest(record.RecordId, fieldValue.FieldId, file));
+          fileRequests.Add(
+            new FileInfoRequest(
+              record.RecordId,
+              fieldValue.FieldId,
+              field.Name,
+              file
+            )
+          );
         }
       }
     }

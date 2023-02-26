@@ -50,6 +50,7 @@ public static class Executor
     var result = await runner.Run();
 
     Log.Information("Onspring Attachment Reporter finished.");
+    Log.Information("You can find the log and report files in the output directory: {OutputDirectory}", outputDirectory);
 
     return result;
   }

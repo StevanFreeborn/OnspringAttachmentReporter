@@ -122,6 +122,11 @@ class OnspringService : IOnspringService
 
       retry++;
 
+      if (retry > retryLimit)
+      {
+        break;
+      }
+
       var wait = 1000 * retry;
 
       _logger.Information(
@@ -132,7 +137,7 @@ class OnspringService : IOnspringService
       Thread.Sleep(wait);
 
       _logger.Information(
-        "Retrying request.' {Attempt} of {AttemptLimit}",
+        "Retrying request. {Attempt} of {AttemptLimit}",
         retry,
         retryLimit
       );

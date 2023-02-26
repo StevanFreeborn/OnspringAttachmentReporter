@@ -53,6 +53,8 @@ class Runner
 
     _processor.PrintReport(fileInfos);
 
+    _logger.Information("Finished writing attachments report:");
+
     return 0;
   }
 }
