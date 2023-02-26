@@ -22,12 +22,13 @@ var logLevelOption = new Option<LogEventLevel>(
   getDefaultValue: () => LogEventLevel.Information
 );
 
-var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.");
-
-rootCommand.AddOption(apiKeyOption);
-rootCommand.AddOption(appIdOption);
-rootCommand.AddOption(configFileOption);
-rootCommand.AddOption(logLevelOption);
+var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.")
+{
+  apiKeyOption,
+  appIdOption,
+  configFileOption,
+  logLevelOption
+};
 
 rootCommand.SetHandler(
   async (apiKeyOption, appIdOption, configFileOption, logLevelOption) =>
