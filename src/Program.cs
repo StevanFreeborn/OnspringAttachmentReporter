@@ -1,4 +1,6 @@
-﻿var apiKeyOption = new Option<string>(
+﻿using OnspringAttachmentReporter.Extensions;
+
+var apiKeyOption = new Option<string>(
   aliases: new string[] { "--apikey", "-k" },
   description: "The API key that will be used to authenticate with Onspring."
 );
@@ -27,31 +29,14 @@ rootCommand.AddOption(appIdOption);
 rootCommand.AddOption(configFileOption);
 rootCommand.AddOption(logLevelOption);
 
-var host = Host
-.CreateDefaultBuilder()
-.ConfigureServices((context, services) =>
-  {
-    services.AddSingleton<IContext>(appContext);
-    services.AddSingleton(Log.Logger);
-    services.AddSingleton<IOnspringClient>(onspringClient);
-    services.AddSingleton<IOnspringService, OnspringService>();
-    services.AddSingleton<IReportService, ReportService>();
-    services.AddSingleton<IProcessor, Processor>();
-    services.AddSingleton<Runner>();
-  })
-.Build();
-
-
 rootCommand.SetHandler(
   async (apiKeyOption, appIdOption, configFileOption, logLevelOption) =>
-    {
-      var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
-      Log.Logger = LoggerFactory.CreateLogger(logLevelOption, outputDirectory);
-      var context = App.GetContext(apiKeyOption, appIdOption, configFileOption, outputDirectory);
-      var services = App.ConfigureServices(context);
-      var runner = App.Run()
-      await Executor.Execute(apiKeyOption, appIdOption, configFileOption, logLevelOption);
-    },
+    await Reporter
+      .GetContext(apiKeyOption, appIdOption, logLevelOption, configFileOption)
+      .ConfigureServices()
+      .BuildServiceProvider()
+      .GetRequiredService<Reporter>()
+      .Run(),
     apiKeyOption,
     appIdOption,
     configFileOption,
