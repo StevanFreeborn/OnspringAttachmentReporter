@@ -1,7 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using Serilog;
 using Serilog.Core;
-using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
 

@@ -1,10 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using Onspring.API.SDK;
-using Onspring.API.SDK.Models;
-using OnspringAttachmentReporter.Interfaces;
-using OnspringAttachmentReporter.Models;
-using Serilog;
-
 namespace OnspringAttachmentReporter.Services;
 
 class OnspringService : IOnspringService

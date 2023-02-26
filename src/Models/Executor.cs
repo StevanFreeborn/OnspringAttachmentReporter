@@ -1,17 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Onspring.API.SDK;
-using OnspringAttachmentReporter.Interfaces;
-using OnspringAttachmentReporter.Services;
-using Serilog;
-using Serilog.Events;
-
 namespace OnspringAttachmentReporter.Models;
 
 public static class Executor
 {
+
   public static async Task<int> Execute(string? apiKeyOption, int? appIdOption, string? configFileOption, LogEventLevel logLevelOption)
   {
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";

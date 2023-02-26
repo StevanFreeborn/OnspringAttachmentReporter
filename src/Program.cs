@@ -1,8 +1,4 @@
-﻿using System.CommandLine;
-using OnspringAttachmentReporter.Models;
-using Serilog.Events;
-
-var apiKeyOption = new Option<string>(
+﻿var apiKeyOption = new Option<string>(
   aliases: new string[] { "--apikey", "-k" },
   description: "The API key that will be used to authenticate with Onspring."
 );
@@ -29,6 +25,12 @@ rootCommand.AddOption(apiKeyOption);
 rootCommand.AddOption(appIdOption);
 rootCommand.AddOption(configFileOption);
 rootCommand.AddOption(logLevelOption);
-rootCommand.SetHandler(Executor.Execute, apiKeyOption, appIdOption, configFileOption, logLevelOption);
+rootCommand.SetHandler(
+  Executor.Execute,
+  apiKeyOption,
+  appIdOption,
+  configFileOption,
+  logLevelOption
+);
 
 return await rootCommand.InvokeAsync(args);

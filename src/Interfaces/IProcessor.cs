@@ -1,5 +1,3 @@
-using Onspring.API.SDK.Models;
-using OnspringAttachmentReporter.Models;
 using FileInfo = OnspringAttachmentReporter.Models.FileInfo;
 
 namespace OnspringAttachmentReporter.Interfaces;

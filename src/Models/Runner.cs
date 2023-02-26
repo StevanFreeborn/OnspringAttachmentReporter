@@ -1,6 +1,3 @@
-using OnspringAttachmentReporter.Interfaces;
-using Serilog;
-
 namespace OnspringAttachmentReporter.Models;
 
 class Runner

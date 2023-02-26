@@ -1,9 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using Onspring.API.SDK.Enums;
-using Onspring.API.SDK.Models;
-using OnspringAttachmentReporter.Interfaces;
-using Serilog;
-
 namespace OnspringAttachmentReporter.Models;
 
 class Processor : IProcessor

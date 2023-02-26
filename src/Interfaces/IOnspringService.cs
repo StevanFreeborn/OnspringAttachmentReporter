@@ -1,6 +1,3 @@
-using Onspring.API.SDK.Models;
-using OnspringAttachmentReporter.Models;
-
 namespace OnspringAttachmentReporter.Interfaces
 {
 
