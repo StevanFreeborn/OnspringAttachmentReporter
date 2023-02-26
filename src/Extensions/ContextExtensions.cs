@@ -9,7 +9,7 @@ public static class ContextExtensions
 
     return new ServiceCollection()
     .AddSingleton<IContext>(context)
-    .AddSingleton(logger)
+    .AddSingleton<ILogger>(logger)
     .AddSingleton<IOnspringClient>(onspringClient)
     .AddSingleton<IOnspringService, OnspringService>()
     .AddSingleton<IReportService, ReportService>()
