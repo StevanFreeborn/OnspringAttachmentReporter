@@ -150,6 +150,11 @@ class Processor : IProcessor
 
         foreach (var attachment in attachments)
         {
+          if (attachment.StorageLocation != FileStorageSite.Internal)
+          {
+            continue;
+          }
+
           fileRequests.Add(new FileInfoRequest(record.RecordId, fieldValue.FieldId, attachment.FileId));
         }
       }
