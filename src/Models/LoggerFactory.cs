@@ -8,10 +8,9 @@ namespace OnspringAttachmentReporter.Models;
 
 static class LoggerFactory
 {
-  public static string GetLogPath()
+  public static string GetLogPath(string outputDirectory)
   {
     var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-    var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
     return Path.Combine(currentDirectory, outputDirectory, "log.json");
   }
 

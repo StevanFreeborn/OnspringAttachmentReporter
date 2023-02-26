@@ -1,41 +1,44 @@
-using Onspring.API.SDK;
+
+using System.Net;
 
 namespace OnspringAttachmentReporterTests.ModelsTests;
 
 public class OnspringServiceTests
 {
-  [Fact]
-  public void OnspringService_WhenConstructorIsCalledWithEmptyApiKey_ShouldThrowArgumentException()
+  private readonly Mock<IContext> _mockContext;
+  private readonly Mock<IOnspringClient> _mockClient;
+  private readonly Mock<ILogger> _mockLogger;
+
+  public OnspringServiceTests()
   {
-    var context = new Context(string.Empty, 1);
-    Action action = () => { _ = new OnspringService(context); };
-    action.Should().Throw<ArgumentException>();
+    _mockContext = new Mock<IContext>();
+    _mockClient = new Mock<IOnspringClient>();
+    _mockLogger = new Mock<ILogger>();
   }
 
   [Fact]
-  public void OnspringService_WhenConstructorIsCalledWithWhiteSpaceApiKey_ShouldThrowArgumentException()
+  public async Task GetAllFields_WhenCalledAndNoFieldsAreFound_ShouldReturnAnEmptyList()
   {
-    var context = new Context(" ", 1);
-    Action action = () => { _ = new OnspringService(context); };
-    action.Should().Throw<ArgumentException>();
-  }
+    var apiResponse = new ApiResponse<GetPagedFieldsResponse>
+    {
+      StatusCode = HttpStatusCode.OK,
+      Message = "OK",
+      Value = new GetPagedFieldsResponse
+      {
+        Items = new List<Field>(),
+        TotalPages = 0,
+        TotalRecords = 0,
+        PageNumber = 1,
+      }
+    };
 
-  [Fact]
-  public void OnspringService_WhenConstructorIsCalledWithNullApiKey_ShouldThrowArgumentException()
-  {
-    var context = new Context(null, 1);
-    Action action = () => { _ = new OnspringService(context); };
-    action.Should().Throw<ArgumentException>();
-  }
+    _mockClient.Setup(m => m.GetFieldsForAppAsync(It.IsAny<int>(), It.IsAny<PagingRequest>()).Result)
+      .Returns(apiResponse);
 
-  [Fact]
-  public void OnspringService_WhenConstructorIsCalledWithApiKey_ShouldReturnANewInstance()
-  {
-    var context = new Context("apiKey", 1);
-    var onspringService = new OnspringService(context);
-    onspringService.Should().NotBeNull();
-    onspringService.Should().BeOfType<OnspringService>();
-    onspringService._client.Should().NotBeNull();
-    onspringService._client.Should().BeOfType<OnspringClient>();
+    var service = new OnspringService(_mockContext.Object, _mockClient.Object, _mockLogger.Object);
+    var result = await service.GetAllFields();
+
+    result.Should().BeEmpty();
+    _mockClient.Verify(m => m.GetFieldsForAppAsync(It.IsAny<int>(), It.IsAny<PagingRequest>()), Times.Once);
   }
 }

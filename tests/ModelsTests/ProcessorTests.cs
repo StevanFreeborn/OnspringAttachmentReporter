@@ -1,34 +1,23 @@
-using Moq;
-using Onspring.API.SDK.Models;
-using OnspringAttachmentReporter.Interfaces;
-
 namespace OnspringAttachmentReporter.ModelsTests;
 
 public class ProcessorTests
 {
-  [Fact]
-  public void Processor_WhenConstructorIsCalledWithContext_ShouldReturnANewInstance()
+  private readonly Mock<IOnspringService> _onspringServiceMock;
+
+  public ProcessorTests()
   {
-    var context = new Context("apiKey", 1);
-    var service = new OnspringService(context);
-    var processor = new Processor(service);
-    processor.Should().NotBeNull();
-    processor.Should().BeOfType<Processor>();
-    processor._onspringService.Should().NotBeNull();
-    processor._onspringService.Should().BeOfType<OnspringService>();
+    _onspringServiceMock = new Mock<IOnspringService>();
   }
 
   [Fact]
-  public async Task GetFileFields_WhenCalledAndNoFileFieldsFound_ShouldReturnNull()
+  public async Task GetFileFields_WhenCalledAndNoFileFieldsFound_ItShouldReturnAnEmptyList()
   {
-    var context = new Context("apiKey", 1);
-    var mockOnspringService = new Mock<IOnspringService>();
-    mockOnspringService
-    .Setup(m => m.GetAllFields(50))
-    .ReturnsAsync((List<Field>?)null);
+    _onspringServiceMock.Setup(m => m.GetAllFields(50).Result).Returns(new List<Field>());
 
-    var processor = new Processor(mockOnspringService.Object);
-    var res = await processor.GetFileFields();
-    res.Should().BeNull();
+    var processor = new Processor(_onspringServiceMock.Object);
+    var result = await processor.GetFileFields();
+
+    result.Should().BeEmpty();
+    _onspringServiceMock.Verify(m => m.GetAllFields(50), Times.Once);
   }
 }

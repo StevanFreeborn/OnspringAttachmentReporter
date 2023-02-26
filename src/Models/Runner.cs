@@ -1,86 +1,58 @@
-using Microsoft.Extensions.Configuration;
-using OnspringAttachmentReporter.Services;
+using OnspringAttachmentReporter.Interfaces;
 using Serilog;
-using Serilog.Events;
 
 namespace OnspringAttachmentReporter.Models;
 
 class Runner
 {
-  public static async Task<int> Run(string? apiKeyOption, int? appIdOption, string? configFileOption, LogEventLevel logLevelOption)
+  private readonly IProcessor _processor;
+  private readonly ILogger _logger;
+
+  public Runner(IProcessor processor, ILogger logger)
   {
-    var logPath = LoggerFactory.GetLogPath();
-    Log.Logger = LoggerFactory.CreateLogger(logPath, logLevelOption);
+    _processor = processor;
+    _logger = logger;
+  }
 
-    var context = GetContext(apiKeyOption, appIdOption, configFileOption);
+  public async Task<int> Run()
+  {
+    _logger.Information("Retrieving file fields.");
 
-    if (context is null)
-    {
-      Log.Fatal("Unable to get context from config file or command line options.");
-      return 1;
-    }
-
-    var service = new OnspringService(context);
-    var processor = new Processor(service);
-    var fileFields = await processor.GetFileFields();
-
-    if (fileFields is null)
-    {
-      Log.Warning("Unable to get file fields.");
-      return 2;
-    }
+    var fileFields = await _processor.GetFileFields();
 
     if (fileFields.Count == 0)
     {
-      Log.Warning("No file fields found.");
+      _logger.Warning("No file fields found.");
+      return 2;
+    }
+
+    _logger.Information("File fields retrieved. {Count} file fields found.", fileFields.Count);
+    _logger.Information("Retrieving files that need to be requested.");
+
+    var fileRequests = await _processor.GetFileRequests(fileFields);
+
+    if (fileRequests.Count == 0)
+    {
+      _logger.Warning("No files found.");
       return 3;
     }
 
-    // get all attachment or image fields
-    // get a page of records
-    // for each record get the file info for each file in each attachment or image field
-    // for each file write it's file info to a csv file
+    _logger.Information("Files retrieved. {Count} files found.", fileRequests.Count);
+    _logger.Information("Retrieving information for each file.");
+
+    var fileInfos = await _processor.GetFileInfos(fileRequests);
+
+    if (fileInfos.Count == 0)
+    {
+      _logger.Warning("No files info found.");
+      return 4;
+    }
+
+    _logger.Information("File info retrieved for {Count} files.", fileInfos.Count);
+    _logger.Information("Writing attachments report.");
+
+    _processor.PrintReport(fileInfos);
+
     return 0;
-  }
-
-  internal static Context? GetContext(string? apiKeyOption, int? appIdOption, string? configFileOption)
-  {
-    if (
-      string.IsNullOrWhiteSpace(apiKeyOption) is false &&
-      appIdOption is not null
-    )
-    {
-      return new Context(apiKeyOption!, appIdOption.Value);
-    }
-
-    if (string.IsNullOrWhiteSpace(configFileOption) is false)
-    {
-      try
-      {
-        var config = new ConfigurationBuilder()
-          .AddJsonFile(configFileOption!)
-          .Build();
-
-        var apiKey = config["ApiKey"];
-        var appId = config["AppId"];
-
-        if (
-          apiKey is not null &&
-          appId is not null &&
-          int.TryParse(appId, out var appIdInt) is true
-        )
-        {
-          return new Context(apiKey, appIdInt);
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error("Unable to get context from config file. {Exception}", ex.Message);
-        return null;
-      }
-    }
-
-    Log.Error("No valid api key and/or app id was provided.");
-    return null;
   }
 }
