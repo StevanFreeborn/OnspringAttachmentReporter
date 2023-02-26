@@ -16,7 +16,9 @@ public class RunnerTests
   [Fact]
   public async Task Run_WhenCalledAndNoFileFieldsFound_ItShouldReturnNonZeroValue()
   {
-    _processorMock.Setup(m => m.GetFileFields().Result).Returns(new List<Field>());
+    _processorMock
+    .Setup(m => m.GetFileFields().Result)
+    .Returns(new List<Field>());
 
     var runner = new Runner(_processorMock.Object, _loggerMock.Object);
     var result = await runner.Run();
@@ -30,8 +32,13 @@ public class RunnerTests
   [Fact]
   public async Task Run_WhenCalledAndNoFilesFound_ItShouldReturnNonZeroValue()
   {
-    _processorMock.Setup(m => m.GetFileFields().Result).Returns(new List<Field> { new Field() });
-    _processorMock.Setup(m => m.GetFileRequests(It.IsAny<List<Field>>()).Result).Returns(new List<FileInfoRequest>());
+    _processorMock
+    .Setup(m => m.GetFileFields().Result)
+    .Returns(new List<Field> { new Field() });
+
+    _processorMock
+    .Setup(m => m.GetFileRequests(It.IsAny<List<Field>>()).Result)
+    .Returns(new List<FileInfoRequest>());
 
     var runner = new Runner(_processorMock.Object, _loggerMock.Object);
     var result = await runner.Run();
@@ -46,9 +53,17 @@ public class RunnerTests
   [Fact]
   public async Task Run_WhenCalledAndNoFilesInformationFound_ItShouldReturnNonZeroValue()
   {
-    _processorMock.Setup(m => m.GetFileFields().Result).Returns(new List<Field> { new Field() });
-    _processorMock.Setup(m => m.GetFileRequests(It.IsAny<List<Field>>()).Result).Returns(new List<FileInfoRequest> { new FileInfoRequest(1, 1, "test", 1) });
-    _processorMock.Setup(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()).Result).Returns(new List<FileInfo>());
+    _processorMock
+    .Setup(m => m.GetFileFields().Result)
+    .Returns(new List<Field> { new Field() });
+
+    _processorMock
+    .Setup(m => m.GetFileRequests(It.IsAny<List<Field>>()).Result)
+    .Returns(new List<FileInfoRequest> { new FileInfoRequest(1, 1, "test", 1) });
+
+    _processorMock
+    .Setup(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()).Result)
+    .Returns(new List<FileInfo>());
 
     var runner = new Runner(_processorMock.Object, _loggerMock.Object);
     var result = await runner.Run();
@@ -63,9 +78,17 @@ public class RunnerTests
   [Fact]
   public async Task Run_WhenCalledAndFileInformationFound_ItShouldReturnZero()
   {
-    _processorMock.Setup(m => m.GetFileFields().Result).Returns(new List<Field> { new Field() });
-    _processorMock.Setup(m => m.GetFileRequests(It.IsAny<List<Field>>()).Result).Returns(new List<FileInfoRequest> { new FileInfoRequest(1, 1, "test", 1) });
-    _processorMock.Setup(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()).Result).Returns(new List<FileInfo> { new FileInfo(1, 1, "test", 1, "test", 1) });
+    _processorMock
+    .Setup(m => m.GetFileFields().Result)
+    .Returns(new List<Field> { new Field() });
+
+    _processorMock
+    .Setup(m => m.GetFileRequests(It.IsAny<List<Field>>()).Result)
+    .Returns(new List<FileInfoRequest> { new FileInfoRequest(1, 1, "test", 1) });
+
+    _processorMock
+    .Setup(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()).Result)
+    .Returns(new List<FileInfo> { new FileInfo(1, 1, "test", 1, "test", 1) });
 
     var runner = new Runner(_processorMock.Object, _loggerMock.Object);
     var result = await runner.Run();

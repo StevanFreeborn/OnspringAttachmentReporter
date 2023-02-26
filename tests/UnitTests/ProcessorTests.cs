@@ -22,9 +22,16 @@ public class ProcessorTests
       new Field { Id = 2, Name = "test2", Type = FieldType.Text }
     };
 
-    _onspringServiceMock.Setup(m => m.GetAllFields(It.IsAny<int>()).Result).Returns(fields);
+    _onspringServiceMock
+    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Returns(fields);
 
-    var processor = new Processor(_onspringServiceMock.Object, _reportServiceMock.Object, _loggerMock.Object);
+    var processor = new Processor(
+      _onspringServiceMock.Object,
+      _reportServiceMock.Object,
+      _loggerMock.Object
+    );
+
     var result = await processor.GetFileFields();
 
     result.Should().BeEmpty();
@@ -44,9 +51,16 @@ public class ProcessorTests
       new Field { Id = fileFieldId, Name = fileFieldName, Type = fileFieldType }
     };
 
-    _onspringServiceMock.Setup(m => m.GetAllFields(It.IsAny<int>()).Result).Returns(fields);
+    _onspringServiceMock
+    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Returns(fields);
 
-    var processor = new Processor(_onspringServiceMock.Object, _reportServiceMock.Object, _loggerMock.Object);
+    var processor = new Processor(
+      _onspringServiceMock.Object,
+      _reportServiceMock.Object,
+      _loggerMock.Object
+    );
+
     var result = await processor.GetFileFields();
 
     result.Should().HaveCount(1);
@@ -69,7 +83,9 @@ public class ProcessorTests
       new Field { Id = fileFieldId, Name = fileFieldName, Type = fileFieldType }
     };
 
-    _onspringServiceMock.Setup(m => m.GetAllFields(It.IsAny<int>()).Result).Returns(fields);
+    _onspringServiceMock
+    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Returns(fields);
 
     var processor = new Processor(
       _onspringServiceMock.Object,

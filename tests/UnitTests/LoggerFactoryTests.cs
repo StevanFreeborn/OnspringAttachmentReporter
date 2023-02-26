@@ -9,7 +9,11 @@ public class LoggerFactoryTests
   public void GetLogPath_WhenCalled_ReturnsProperPath()
   {
     var outputDirectory = @$"{DateTime.Now:yyyyMMddHHmm}-output";
-    var expected = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, outputDirectory, "log.json");
+    var expected = Path.Combine(
+      AppDomain.CurrentDomain.BaseDirectory, outputDirectory,
+      "log.json"
+    );
+
     var result = LoggerFactory.GetLogPath(outputDirectory);
 
     result.Should().Be(expected);
