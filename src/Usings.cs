@@ -3,7 +3,6 @@ global using System.Diagnostics.CodeAnalysis;
 
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Hosting;
 
 global using Onspring.API.SDK;
 global using Onspring.API.SDK.Enums;

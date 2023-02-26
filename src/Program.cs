@@ -1,4 +1,6 @@
-﻿var apiKeyOption = new Option<string>(
+﻿using OnspringAttachmentReporter.Extensions;
+
+var apiKeyOption = new Option<string>(
   aliases: new string[] { "--apikey", "-k" },
   description: "The API key that will be used to authenticate with Onspring."
 );
@@ -20,17 +22,26 @@ var logLevelOption = new Option<LogEventLevel>(
   getDefaultValue: () => LogEventLevel.Information
 );
 
-var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.");
-rootCommand.AddOption(apiKeyOption);
-rootCommand.AddOption(appIdOption);
-rootCommand.AddOption(configFileOption);
-rootCommand.AddOption(logLevelOption);
-rootCommand.SetHandler(
-  Executor.Execute,
+var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.")
+{
   apiKeyOption,
   appIdOption,
   configFileOption,
   logLevelOption
+};
+
+rootCommand.SetHandler(
+  async (apiKeyOption, appIdOption, configFileOption, logLevelOption) =>
+    await Reporter
+      .GetContext(apiKeyOption, appIdOption, logLevelOption, configFileOption)
+      .ConfigureServices()
+      .BuildServiceProvider()
+      .GetRequiredService<Reporter>()
+      .Run(),
+    apiKeyOption,
+    appIdOption,
+    configFileOption,
+    logLevelOption
 );
 
 return await rootCommand.InvokeAsync(args);
