@@ -1,9 +1,9 @@
 namespace OnspringAttachmentReporter.Models;
 
-public static class Executor
+public class App
 {
 
-  public static async Task<int> Execute(string? apiKeyOption, int? appIdOption, string? configFileOption, LogEventLevel logLevelOption)
+  public static IServiceCollection ConfigureServices(Context context)
   {
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
 
@@ -21,7 +21,7 @@ public static class Executor
 
     Log.Debug("Context successfully retrieved from config file or command line options.");
 
-    var onspringClient = new OnspringClient("https://api.onspring.com", appContext.ApiKey);
+    var onspringClient = new OnspringClient("https://api.onspring.com", context.ApiKey);
 
     var host = Host.CreateDefaultBuilder()
       .ConfigureServices((context, services) =>
@@ -33,6 +33,7 @@ public static class Executor
         services.AddSingleton<IReportService, ReportService>();
         services.AddSingleton<IProcessor, Processor>();
         services.AddSingleton<Runner>();
+        services.AddSingleton<App>();
       })
       .Build();
 
@@ -49,8 +50,10 @@ public static class Executor
     return result;
   }
 
-  internal static Context? GetContext(string? apiKeyOption, int? appIdOption, string? configFileOption, string outputDirectory)
+  public static Context? GetContext(string? apiKeyOption, int? appIdOption, int logLevelOption, string? configFileOption)
   {
+    var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
+
     if (
       string.IsNullOrWhiteSpace(apiKeyOption) is false &&
       appIdOption is not null

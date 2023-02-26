@@ -21,16 +21,41 @@ var logLevelOption = new Option<LogEventLevel>(
 );
 
 var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.");
+
 rootCommand.AddOption(apiKeyOption);
 rootCommand.AddOption(appIdOption);
 rootCommand.AddOption(configFileOption);
 rootCommand.AddOption(logLevelOption);
+
+var host = Host
+.CreateDefaultBuilder()
+.ConfigureServices((context, services) =>
+  {
+    services.AddSingleton<IContext>(appContext);
+    services.AddSingleton(Log.Logger);
+    services.AddSingleton<IOnspringClient>(onspringClient);
+    services.AddSingleton<IOnspringService, OnspringService>();
+    services.AddSingleton<IReportService, ReportService>();
+    services.AddSingleton<IProcessor, Processor>();
+    services.AddSingleton<Runner>();
+  })
+.Build();
+
+
 rootCommand.SetHandler(
-  Executor.Execute,
-  apiKeyOption,
-  appIdOption,
-  configFileOption,
-  logLevelOption
+  async (apiKeyOption, appIdOption, configFileOption, logLevelOption) =>
+    {
+      var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
+      Log.Logger = LoggerFactory.CreateLogger(logLevelOption, outputDirectory);
+      var context = App.GetContext(apiKeyOption, appIdOption, configFileOption, outputDirectory);
+      var services = App.ConfigureServices(context);
+      var runner = App.Run()
+      await Executor.Execute(apiKeyOption, appIdOption, configFileOption, logLevelOption);
+    },
+    apiKeyOption,
+    appIdOption,
+    configFileOption,
+    logLevelOption
 );
 
 return await rootCommand.InvokeAsync(args);
