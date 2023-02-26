@@ -1,8 +1,9 @@
 using System.Globalization;
 using CsvHelper;
 using OnspringAttachmentReporter.Interfaces;
+using FileInfo = OnspringAttachmentReporter.Models.FileInfo;
 
-namespace OnspringAttachmentReporter.Models;
+namespace OnspringAttachmentReporter.Services;
 
 public class ReportService : IReportService
 {
