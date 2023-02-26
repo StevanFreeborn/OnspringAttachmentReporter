@@ -19,7 +19,7 @@ class Runner
 
     if (fileFields.Count == 0)
     {
-      _logger.Warning("No file fields found.");
+      _logger.Warning("No file fields could be found.");
       return 2;
     }
 
@@ -34,7 +34,7 @@ class Runner
 
     if (fileRequests.Count == 0)
     {
-      _logger.Warning("No files found.");
+      _logger.Warning("No files could be found.");
       return 3;
     }
 
@@ -49,7 +49,7 @@ class Runner
 
     if (fileInfos.Count == 0)
     {
-      _logger.Warning("No files info found.");
+      _logger.Warning("No files information could be found.");
       return 4;
     }
 

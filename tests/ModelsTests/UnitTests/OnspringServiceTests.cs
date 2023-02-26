@@ -1,7 +1,7 @@
 
 using System.Net;
 
-namespace OnspringAttachmentReporterTests.ModelsTests;
+namespace OnspringAttachmentReporterTests.UnitTests;
 
 public class OnspringServiceTests
 {
