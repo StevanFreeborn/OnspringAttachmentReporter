@@ -1,5 +1,6 @@
 using System.Globalization;
 using CsvHelper;
+using CsvHelper.Configuration;
 using FileInfo = OnspringAttachmentReporter.Models.FileInfo;
 
 namespace OnspringAttachmentReporter.Services;
@@ -17,7 +18,13 @@ public class ReportService : IReportService
   {
     var fileName = GetReportPath();
     using var writer = new StreamWriter(fileName);
-    using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+
+    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+    {
+      ShouldQuote = (field) => false,
+    };
+
+    using var csv = new CsvWriter(writer, config);
     csv.WriteRecords(fileInfos);
   }
 
