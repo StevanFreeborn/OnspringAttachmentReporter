@@ -23,7 +23,11 @@ class Runner
       return 2;
     }
 
-    _logger.Information("File fields retrieved. {Count} file fields found.", fileFields.Count);
+    _logger.Information(
+      "File fields retrieved. {Count} file fields found.",
+      fileFields.Count
+    );
+
     _logger.Information("Retrieving files that need to be requested.");
 
     var fileRequests = await _processor.GetFileRequests(fileFields);
@@ -34,7 +38,11 @@ class Runner
       return 3;
     }
 
-    _logger.Information("Files retrieved. {Count} files found.", fileRequests.Count);
+    _logger.Information(
+      "Files retrieved. {Count} files found.",
+      fileRequests.Count
+    );
+
     _logger.Information("Retrieving information for each file.");
 
     var fileInfos = await _processor.GetFileInfos(fileRequests);
@@ -45,8 +53,13 @@ class Runner
       return 4;
     }
 
-    _logger.Information("File info retrieved for {Count} files.", fileInfos.Count);
-    _logger.Information("Writing attachments report.");
+    _logger.Information(
+      "File info retrieved for {Count} of {Total} files.",
+      fileInfos.Count,
+      fileRequests.Count
+    );
+
+    _logger.Information("Start writing attachments report.");
 
     _processor.PrintReport(fileInfos);
 
