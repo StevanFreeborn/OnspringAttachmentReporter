@@ -16,9 +16,7 @@ public static class Executor
   {
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
 
-    var logPath = LoggerFactory.GetLogPath(outputDirectory);
-    Log.Logger = LoggerFactory.CreateLogger(logPath, logLevelOption);
-
+    Log.Logger = LoggerFactory.CreateLogger(logLevelOption, outputDirectory);
     Log.Information("Starting Onspring Attachment Reporter.");
     Log.Debug("Attempting to get context from config file or command line options.");
 
@@ -33,6 +31,7 @@ public static class Executor
     Log.Debug("Context successfully retrieved from config file or command line options.");
 
     var onspringClient = new OnspringClient("https://api.onspring.com", appContext.ApiKey);
+
     var host = Host.CreateDefaultBuilder()
       .ConfigureServices((context, services) =>
       {
@@ -50,7 +49,11 @@ public static class Executor
     var result = await runner.Run();
 
     Log.Information("Onspring Attachment Reporter finished.");
-    Log.Information("You can find the log and report files in the output directory: {OutputDirectory}", outputDirectory);
+    Log.Information(
+      "You can find the log and report files in the output directory: {OutputDirectory}",
+      Path.Combine(AppDomain.CurrentDomain.BaseDirectory, outputDirectory)
+    );
+    await Log.CloseAndFlushAsync();
 
     return result;
   }

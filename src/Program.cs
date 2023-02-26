@@ -1,10 +1,5 @@
 ﻿using System.CommandLine;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Onspring.API.SDK;
-using OnspringAttachmentReporter.Interfaces;
 using OnspringAttachmentReporter.Models;
-using OnspringAttachmentReporter.Services;
 using Serilog.Events;
 
 var apiKeyOption = new Option<string>(
@@ -34,7 +29,6 @@ rootCommand.AddOption(apiKeyOption);
 rootCommand.AddOption(appIdOption);
 rootCommand.AddOption(configFileOption);
 rootCommand.AddOption(logLevelOption);
-
 rootCommand.SetHandler(Executor.Execute, apiKeyOption, appIdOption, configFileOption, logLevelOption);
 
 return await rootCommand.InvokeAsync(args);

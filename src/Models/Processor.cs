@@ -82,98 +82,11 @@ class Processor : IProcessor
   {
     var fileInfos = new List<FileInfo>();
 
-    foreach (var request in fileRequests)
+    await Parallel.ForEachAsync(fileRequests, async (fileRequest, token) =>
     {
-      _logger.Debug(
-        "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
-        request.RecordId,
-        request.FieldId,
-        request.FileId
-      );
-
-      var res = await _onspringService.GetFile(request);
-
-      if (res == null)
-      {
-        _logger.Warning(
-          "Unable to get file info for record {RecordId}, field {FieldId}, file {FileId}.",
-          request.RecordId,
-          request.FieldId,
-          request.FileId
-        );
-
-        fileInfos.Add(
-          new FileInfo(
-            request.RecordId,
-            request.FieldId,
-            request.FieldName,
-            request.FileId,
-            "Error: Unable to get file info",
-            0
-          )
-        );
-        continue;
-      }
-
-      _logger.Debug(
-        "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
-        request.RecordId,
-        request.FieldId,
-        request.FileId
-      );
-
-      fileInfos.Add(
-        new FileInfo(
-          request.RecordId,
-          request.FieldId,
-          request.FieldName,
-          request.FileId,
-          res.FileName,
-          Convert.ToDecimal(res.ContentLength)
-        )
-      );
-    }
-
-    // await Parallel.ForEachAsync(fileRequests, async (fileRequest, token) =>
-    // {
-    //   _logger.Debug(
-    //     "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
-    //     fileRequest.RecordId,
-    //     fileRequest.FieldId,
-    //     fileRequest.FileId
-    //   );
-
-    //   var res = await _onspringService.GetFile(fileRequest);
-
-    //   if (res == null)
-    //   {
-    //     _logger.Warning(
-    //       "No file info found for record {RecordId}, field {FieldId}, file {FileId}.",
-    //       fileRequest.RecordId,
-    //       fileRequest.FieldId,
-    //       fileRequest.FileId
-    //     );
-    //     return;
-    //   }
-
-    //   _logger.Debug(
-    //     "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
-    //     fileRequest.RecordId,
-    //     fileRequest.FieldId,
-    //     fileRequest.FileId
-    //   );
-
-    //   var fileInfo = new FileInfo(
-    //     fileRequest.RecordId,
-    //     fileRequest.FieldId,
-    //     fileRequest.FieldName,
-    //     fileRequest.FileId,
-    //     res.FileName,
-    //     Convert.ToDecimal(res.ContentLength)
-    //   );
-
-    //   fileInfos.Add(fileInfo);
-    // });
+      var fileInfo = await GetFileInfo(fileRequest);
+      fileInfos.Add(fileInfo);
+    });
 
     return fileInfos;
   }
@@ -238,5 +151,53 @@ class Processor : IProcessor
     }
 
     return fileRequests;
+  }
+
+  [ExcludeFromCodeCoverage]
+  private async Task<FileInfo> GetFileInfo(FileInfoRequest fileRequest)
+  {
+    _logger.Debug(
+      "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
+      fileRequest.RecordId,
+      fileRequest.FieldId,
+      fileRequest.FileId
+    );
+
+    var res = await _onspringService.GetFile(fileRequest);
+
+    if (res == null)
+    {
+      _logger.Warning(
+        "Unable to get file info for record {RecordId}, field {FieldId}, file {FileId}.",
+        fileRequest.RecordId,
+        fileRequest.FieldId,
+        fileRequest.FileId
+      );
+
+      return new FileInfo(
+        fileRequest.RecordId,
+        fileRequest.FieldId,
+        fileRequest.FieldName,
+        fileRequest.FileId,
+        "Error: Unable to get file info",
+        0
+      );
+    }
+
+    _logger.Debug(
+      "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
+      fileRequest.RecordId,
+      fileRequest.FieldId,
+      fileRequest.FileId
+    );
+
+    return new FileInfo(
+      fileRequest.RecordId,
+      fileRequest.FieldId,
+      fileRequest.FieldName,
+      fileRequest.FileId,
+      res.FileName,
+      Convert.ToDecimal(res.ContentLength)
+    );
   }
 }

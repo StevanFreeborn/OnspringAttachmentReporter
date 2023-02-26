@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using CsvHelper;
 using OnspringAttachmentReporter.Interfaces;
@@ -14,17 +15,18 @@ public class ReportService : IReportService
     _context = context;
   }
 
-  public string GetReportPath()
-  {
-    var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-    return Path.Combine(currentDirectory, _context.OutputDirectory, "attachment_report.csv");
-  }
-
   public void WriteReport(List<FileInfo> fileInfos)
   {
     var fileName = GetReportPath();
     using var writer = new StreamWriter(fileName);
     using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
     csv.WriteRecords(fileInfos);
+  }
+
+  [ExcludeFromCodeCoverage]
+  private string GetReportPath()
+  {
+    var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    return Path.Combine(currentDirectory, _context.OutputDirectory, "attachment_report.csv");
   }
 }

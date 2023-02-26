@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -8,21 +9,22 @@ namespace OnspringAttachmentReporter.Models;
 
 static class LoggerFactory
 {
-  public static string GetLogPath(string outputDirectory)
-  {
-    var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-    return Path.Combine(currentDirectory, outputDirectory, "log.json");
-  }
-
-  public static Logger CreateLogger(string logPath, LogEventLevel logLevel)
+  public static Logger CreateLogger(LogEventLevel logLevel, string outputDirectory)
   {
     return new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .WriteTo.File(new CompactJsonFormatter(), logPath)
+    .WriteTo.File(new CompactJsonFormatter(), GetLogPath(outputDirectory))
     .WriteTo.Console(
       restrictedToMinimumLevel: logLevel,
       theme: AnsiConsoleTheme.Code
     )
     .CreateLogger();
+  }
+
+  [ExcludeFromCodeCoverage]
+  private static string GetLogPath(string outputDirectory)
+  {
+    var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    return Path.Combine(currentDirectory, outputDirectory, "log.json");
   }
 }
