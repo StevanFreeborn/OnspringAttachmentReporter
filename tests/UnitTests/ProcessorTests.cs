@@ -146,8 +146,8 @@ public class ProcessorTests
   public async Task GetFileRequests_WhenCalledAndNoRecordsAreFound_ItShouldReturnAnEmptyList()
   {
     _onspringServiceMock
-    .Setup(m => m.GetAPageOfRecords(It.IsAny<List<int>>(), It.IsAny<PagingRequest>()).Result)
-    .Returns<List<ResultRecord>>(null);
+    .Setup(m => m.GetAPageOfRecords(new List<int>() { 1, 2 }, new PagingRequest(1, 1)).Result)
+    .Returns<GetPagedRecordsResponse?>(null);
 
     var processor = new Processor(
       _onspringServiceMock.Object,
@@ -163,6 +163,7 @@ public class ProcessorTests
 
     var result = await processor.GetFileRequests(fileFields);
 
+    result.Should().NotBeNull();
     result.Should().BeEmpty();
     _onspringServiceMock.Verify(m =>
       m.GetAPageOfRecords(It.IsAny<List<int>>(), It.IsAny<PagingRequest>()),

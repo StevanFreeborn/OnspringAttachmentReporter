@@ -26,7 +26,7 @@ class Processor : IProcessor
   {
     var fileFieldIds = fileFields.Select(f => f.Id).ToList();
     var pagingRequest = new PagingRequest(1, 50);
-    var totalPages = 2;
+    var totalPages = 1;
     var currentPage = pagingRequest.PageNumber;
     var fileRequests = new List<FileInfoRequest>();
 
@@ -38,6 +38,9 @@ class Processor : IProcessor
       );
 
       var res = await _onspringService.GetAPageOfRecords(fileFieldIds, pagingRequest);
+
+      pagingRequest.PageNumber++;
+      currentPage = pagingRequest.PageNumber;
 
       if (res == null)
       {
@@ -65,8 +68,6 @@ class Processor : IProcessor
       }
 
       totalPages = res.TotalPages;
-      pagingRequest.PageNumber++;
-      currentPage = pagingRequest.PageNumber;
     } while (currentPage <= totalPages);
 
     return fileRequests;
