@@ -13,6 +13,8 @@ global using OnspringAttachmentReporter.Interfaces;
 global using OnspringAttachmentReporter.Models;
 global using OnspringAttachmentReporter.Services;
 
+global using OnspringAttachmentReporterTests.Utils;
+
 global using Serilog;
 global using Serilog.Core;
 global using Serilog.Events;

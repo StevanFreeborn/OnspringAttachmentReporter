@@ -26,13 +26,23 @@ public class ReportService : IReportService
       ShouldQuote = (field) => false,
     };
 
-    using var csv = new CsvWriter(writer, config);
-    csv.WriteRecords(fileInfos);
+    using (var csv = new CsvWriter(writer, config))
+    {
+      csv.Context.RegisterClassMap<FileInfoMap>();
+      csv.WriteRecords(fileInfos);
+    };
   }
 
   internal string GetReportPath()
   {
     var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    var outputDirectory = Path.Combine(currentDirectory, _context.OutputDirectory);
+
+    if (!Directory.Exists(outputDirectory))
+    {
+      Directory.CreateDirectory(outputDirectory);
+    }
+
     return Path.Combine(currentDirectory, _context.OutputDirectory, "attachment_report.csv");
   }
 }
