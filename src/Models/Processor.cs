@@ -158,6 +158,12 @@ class Processor : IProcessor
     .Select(f => f.Id)
     .ToList();
 
+    // If there is only one attachment field, then there can't be "All Attachments" field.
+    if (attachmentFieldIds.Count <= 1)
+    {
+      return false;
+    }
+
     var attachmentIds = record.FieldData
     .Where(f => attachmentFieldIds.Contains(f.FieldId))
     .SelectMany(f => f.AsAttachmentList())

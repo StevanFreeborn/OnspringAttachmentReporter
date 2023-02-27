@@ -1,11 +1,14 @@
 global using FluentAssertions;
 
+global using Microsoft.Extensions.DependencyInjection;
+
 global using Moq;
 
 global using Onspring.API.SDK;
 global using Onspring.API.SDK.Enums;
 global using Onspring.API.SDK.Models;
 
+global using OnspringAttachmentReporter.Extensions;
 global using OnspringAttachmentReporter.Interfaces;
 global using OnspringAttachmentReporter.Models;
 global using OnspringAttachmentReporter.Services;
