@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace OnspringAttachmentReporter.Models;
 
 class Processor : IProcessor
@@ -60,11 +62,7 @@ class Processor : IProcessor
       foreach (var record in res.Items)
       {
         var requests = GetFileRequestsFromRecord(record, fileFields);
-
-        foreach (var request in requests)
-        {
-          fileRequests.Add(request);
-        }
+        fileRequests.AddRange(requests);
       }
 
       totalPages = res.TotalPages;
@@ -75,15 +73,16 @@ class Processor : IProcessor
 
   public async Task<List<FileInfo>> GetFileInfos(List<FileInfoRequest> fileRequests)
   {
-    var fileInfos = new List<FileInfo>();
+    var fileInfos = new ConcurrentBag<FileInfo>();
 
-    await Parallel.ForEachAsync(fileRequests, async (fileRequest, token) =>
-    {
-      var fileInfo = await GetFileInfo(fileRequest);
-      fileInfos.Add(fileInfo);
-    });
+    await Parallel.ForEachAsync(
+      fileRequests,
+      async (fileRequest, token) => fileInfos.Add(
+        await GetFileInfo(fileRequest)
+      )
+    );
 
-    return fileInfos;
+    return fileInfos.ToList();
   }
 
   public void PrintReport(List<FileInfo> fileInfos)
@@ -91,7 +90,56 @@ class Processor : IProcessor
     _reportService.WriteReport(fileInfos);
   }
 
-  internal static List<FileInfoRequest> GetFileRequestsFromRecord(ResultRecord record, List<Field> fileFields)
+  [ExcludeFromCodeCoverage]
+  private async Task<FileInfo> GetFileInfo(FileInfoRequest fileRequest)
+  {
+    _logger.Debug(
+      "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
+      fileRequest.RecordId,
+      fileRequest.FieldId,
+      fileRequest.FileId
+    );
+
+    var res = await _onspringService.GetFile(fileRequest);
+
+    if (res == null)
+    {
+      _logger.Warning(
+        "Unable to get file info for record {RecordId}, field {FieldId}, file {FileId}.",
+        fileRequest.RecordId,
+        fileRequest.FieldId,
+        fileRequest.FileId
+      );
+
+      return new FileInfo(
+        fileRequest.RecordId,
+        fileRequest.FieldId,
+        fileRequest.FieldName,
+        fileRequest.FileId,
+        "Error: Unable to get file info",
+        0
+      );
+    }
+
+    _logger.Debug(
+      "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
+      fileRequest.RecordId,
+      fileRequest.FieldId,
+      fileRequest.FileId
+    );
+
+    return new FileInfo(
+      fileRequest.RecordId,
+      fileRequest.FieldId,
+      fileRequest.FieldName,
+      fileRequest.FileId,
+      res.FileName,
+      Convert.ToDecimal(res.ContentLength)
+    );
+  }
+
+  [ExcludeFromCodeCoverage]
+  private static List<FileInfoRequest> GetFileRequestsFromRecord(ResultRecord record, List<Field> fileFields)
   {
     var fileRequests = new List<FileInfoRequest>();
 
@@ -159,7 +207,7 @@ class Processor : IProcessor
     .Select(f => f.Id)
     .ToList();
 
-    // If there is only one attachment field, then there can't be "All Attachments" field.
+    // If there is only one attachment field, then there can't be an "All Attachments" field.
     if (attachmentFieldIds.Count <= 1)
     {
       return false;
@@ -173,52 +221,5 @@ class Processor : IProcessor
     .ToList();
 
     return attachmentFieldValue.Select(f => f.FileId).Distinct().SequenceEqual(attachmentIds);
-  }
-
-  internal async Task<FileInfo> GetFileInfo(FileInfoRequest fileRequest)
-  {
-    _logger.Debug(
-      "Retrieving file info for record {RecordId}, field {FieldId}, file {FileId}.",
-      fileRequest.RecordId,
-      fileRequest.FieldId,
-      fileRequest.FileId
-    );
-
-    var res = await _onspringService.GetFile(fileRequest);
-
-    if (res == null)
-    {
-      _logger.Warning(
-        "Unable to get file info for record {RecordId}, field {FieldId}, file {FileId}.",
-        fileRequest.RecordId,
-        fileRequest.FieldId,
-        fileRequest.FileId
-      );
-
-      return new FileInfo(
-        fileRequest.RecordId,
-        fileRequest.FieldId,
-        fileRequest.FieldName,
-        fileRequest.FileId,
-        "Error: Unable to get file info",
-        0
-      );
-    }
-
-    _logger.Debug(
-      "File info retrieved for record {RecordId}, field {FieldId}, file {FileId}.",
-      fileRequest.RecordId,
-      fileRequest.FieldId,
-      fileRequest.FileId
-    );
-
-    return new FileInfo(
-      fileRequest.RecordId,
-      fileRequest.FieldId,
-      fileRequest.FieldName,
-      fileRequest.FileId,
-      res.FileName,
-      Convert.ToDecimal(res.ContentLength)
-    );
   }
 }
