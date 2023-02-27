@@ -13,16 +13,21 @@ class OnspringService : IOnspringService
     _logger = logger;
   }
 
-  public async Task<List<Field>> GetAllFields(int pageSize = 50)
+  public async Task<List<Field>> GetAllFields()
   {
     var fields = new List<Field>();
     var totalPages = 1;
-    var pagingRequest = new PagingRequest(1, pageSize);
+    var pagingRequest = new PagingRequest(1, 50);
     var currentPage = pagingRequest.PageNumber;
 
     do
     {
-      var res = await ExecuteRequest(async () => await _client.GetFieldsForAppAsync(_context.AppId, pagingRequest));
+      var res = await ExecuteRequest(
+        async () => await _client.GetFieldsForAppAsync(
+          _context.AppId,
+          pagingRequest
+        )
+      );
 
       if (res.IsSuccessful is true)
       {
@@ -40,7 +45,8 @@ class OnspringService : IOnspringService
         );
       }
 
-      currentPage += pagingRequest.PageNumber;
+      pagingRequest.PageNumber++;
+      currentPage = pagingRequest.PageNumber;
     } while (currentPage <= totalPages);
 
     return fields;
@@ -55,7 +61,9 @@ class OnspringService : IOnspringService
       FieldIds = fileFields
     };
 
-    var res = await ExecuteRequest(async () => await _client.GetRecordsForAppAsync(request));
+    var res = await ExecuteRequest(
+      async () => await _client.GetRecordsForAppAsync(request)
+    );
 
     if (res.IsSuccessful is true)
     {
@@ -73,7 +81,13 @@ class OnspringService : IOnspringService
 
   public async Task<GetFileResponse?> GetFile(FileInfoRequest fileRequest)
   {
-    var res = await ExecuteRequest(async () => await _client.GetFileAsync(fileRequest.RecordId, fileRequest.FieldId, fileRequest.FileId));
+    var res = await ExecuteRequest(
+      async () => await _client.GetFileAsync(
+        fileRequest.RecordId,
+        fileRequest.FieldId,
+        fileRequest.FileId
+      )
+    );
 
     if (res.IsSuccessful is true)
     {

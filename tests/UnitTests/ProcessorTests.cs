@@ -25,7 +25,7 @@ public class ProcessorTests
     };
 
     _onspringServiceMock
-    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Setup(m => m.GetAllFields().Result)
     .Returns(fields);
 
     var processor = new Processor(
@@ -37,7 +37,7 @@ public class ProcessorTests
     var result = await processor.GetFileFields();
 
     result.Should().BeEmpty();
-    _onspringServiceMock.Verify(m => m.GetAllFields(It.IsAny<int>()), Times.Once);
+    _onspringServiceMock.Verify(m => m.GetAllFields(), Times.Once);
   }
 
   [Fact]
@@ -54,7 +54,7 @@ public class ProcessorTests
     };
 
     _onspringServiceMock
-    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Setup(m => m.GetAllFields().Result)
     .Returns(fields);
 
     var processor = new Processor(
@@ -69,7 +69,7 @@ public class ProcessorTests
     result.First().Id.Should().Be(fileFieldId);
     result.First().Name.Should().Be(fileFieldName);
     result.First().Type.Should().Be(fileFieldType);
-    _onspringServiceMock.Verify(m => m.GetAllFields(It.IsAny<int>()), Times.Once);
+    _onspringServiceMock.Verify(m => m.GetAllFields(), Times.Once);
   }
 
   [Fact]
@@ -86,7 +86,7 @@ public class ProcessorTests
     };
 
     _onspringServiceMock
-    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Setup(m => m.GetAllFields().Result)
     .Returns(fields);
 
     var processor = new Processor(
@@ -101,7 +101,7 @@ public class ProcessorTests
     result.First().Id.Should().Be(fileFieldId);
     result.First().Name.Should().Be(fileFieldName);
     result.First().Type.Should().Be(fileFieldType);
-    _onspringServiceMock.Verify(m => m.GetAllFields(It.IsAny<int>()), Times.Once);
+    _onspringServiceMock.Verify(m => m.GetAllFields(), Times.Once);
   }
 
   [Fact]
@@ -123,7 +123,7 @@ public class ProcessorTests
     };
 
     _onspringServiceMock
-    .Setup(m => m.GetAllFields(It.IsAny<int>()).Result)
+    .Setup(m => m.GetAllFields().Result)
     .Returns(fields);
 
     var processor = new Processor(
@@ -141,7 +141,7 @@ public class ProcessorTests
     result.Last().Id.Should().Be(imageFieldId);
     result.Last().Name.Should().Be(imageFieldName);
     result.Last().Type.Should().Be(imageFieldType);
-    _onspringServiceMock.Verify(m => m.GetAllFields(It.IsAny<int>()), Times.Once);
+    _onspringServiceMock.Verify(m => m.GetAllFields(), Times.Once);
   }
 
   [Fact]
