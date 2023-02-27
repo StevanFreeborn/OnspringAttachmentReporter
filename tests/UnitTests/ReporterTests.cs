@@ -155,7 +155,7 @@ public class ReporterTests
   }
 
   [Fact]
-  public async Task Run_WhenCalledAndFileInfoIsNotFound_ItShouldReturnThree()
+  public async Task Run_WhenCalledAndFileInfoIsNotFound_ItShouldReturnFour()
   {
     var fileFields = new List<Field>
     {
@@ -197,7 +197,7 @@ public class ReporterTests
 
     var result = await reporter.Run();
 
-    result.Should().Be(3);
+    result.Should().Be(4);
     _processorMock.Verify(m => m.GetFileFields(), Times.Once);
     _processorMock.Verify(m => m.GetFileRequests(It.IsAny<List<Field>>()), Times.Once);
     _processorMock.Verify(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()), Times.Once);
@@ -205,7 +205,7 @@ public class ReporterTests
   }
 
   [Fact]
-  public async Task Run_WhenCalledAndFileRequestsAreNotFound_ItShouldReturnTwo()
+  public async Task Run_WhenCalledAndFileRequestsAreNotFound_ItShouldReturnThree()
   {
     var fileFields = new List<Field>
     {
@@ -240,7 +240,7 @@ public class ReporterTests
 
     var result = await reporter.Run();
 
-    result.Should().Be(2);
+    result.Should().Be(3);
     _processorMock.Verify(m => m.GetFileFields(), Times.Once);
     _processorMock.Verify(m => m.GetFileRequests(It.IsAny<List<Field>>()), Times.Once);
     _processorMock.Verify(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()), Times.Never);
@@ -248,7 +248,7 @@ public class ReporterTests
   }
 
   [Fact]
-  public async Task Run_WhenCalledAndFileFieldsAreNotFound_ItShouldReturnOne()
+  public async Task Run_WhenCalledAndFileFieldsAreNotFound_ItShouldReturnTwo()
   {
     var fileFields = new List<Field>();
 
@@ -264,7 +264,7 @@ public class ReporterTests
 
     var result = await reporter.Run();
 
-    result.Should().Be(1);
+    result.Should().Be(2);
     _processorMock.Verify(m => m.GetFileFields(), Times.Once);
     _processorMock.Verify(m => m.GetFileRequests(It.IsAny<List<Field>>()), Times.Never);
     _processorMock.Verify(m => m.GetFileInfos(It.IsAny<List<FileInfoRequest>>()), Times.Never);

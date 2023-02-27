@@ -35,19 +35,36 @@ internal class Program
     };
 
     rootCommand.SetHandler(
-      async (apiKeyOption, appIdOption, configFileOption, logLevelOption) =>
-        await Reporter
-          .GetContext(apiKeyOption, appIdOption, logLevelOption, configFileOption)
-          .ConfigureServices()
-          .BuildServiceProvider()
-          .GetRequiredService<Reporter>()
-          .Run(),
-        apiKeyOption,
-        appIdOption,
-        configFileOption,
-        logLevelOption
+      Execute,
+      apiKeyOption,
+      appIdOption,
+      logLevelOption,
+      configFileOption
     );
 
     return await rootCommand.InvokeAsync(args);
+  }
+
+  public async static Task<int> Execute(
+    string? apiKeyOption,
+    int? appIdOption,
+    LogEventLevel logLevelOption,
+    string? configFileOption
+  )
+  {
+    try
+    {
+      return await Reporter
+      .GetContext(apiKeyOption, appIdOption, logLevelOption, configFileOption)
+      .ConfigureServices()
+      .BuildServiceProvider()
+      .GetRequiredService<Reporter>()
+      .Run();
+    }
+    catch (Exception e)
+    {
+      Console.WriteLine(e.Message);
+      return 1;
+    }
   }
 }

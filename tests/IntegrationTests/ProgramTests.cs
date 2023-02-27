@@ -13,6 +13,19 @@ namespace OnspringAttachmentReporterTests.IntegrationTests
     }
 
     [Fact]
+    public async Task Main_WhenCalledWithNoApiKeyAppIdOrConfigOption_ItShouldReturnOne()
+    {
+      var args = new string[]
+      {
+        "-l",
+        "debug"
+      };
+
+      var result = await Program.Main(args);
+      result.Should().Be(1);
+    }
+
+    [Fact]
     public async Task Main_WhenCalledWithValidConfigAndLogLevel_ItShouldReturnZero()
     {
       var configFilePath = _configuration["TestConfigFilePath"];
