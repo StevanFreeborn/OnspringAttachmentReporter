@@ -2,6 +2,7 @@ using CsvHelper.Configuration;
 
 namespace OnspringAttachmentReporter.Models;
 
+[ExcludeFromCodeCoverage]
 public class FileInfoMap : ClassMap<FileInfo>
 {
   public FileInfoMap()

@@ -24,7 +24,7 @@ public class Reporter
     if (fileFields.Count == 0)
     {
       _logger.Warning("No file fields could be found.");
-      return 2;
+      return 1;
     }
 
     _logger.Information(
@@ -39,7 +39,7 @@ public class Reporter
     if (fileRequests.Count == 0)
     {
       _logger.Warning("No files could be found.");
-      return 3;
+      return 2;
     }
 
     _logger.Information(
@@ -54,7 +54,7 @@ public class Reporter
     if (fileInfos.Count == 0)
     {
       _logger.Warning("No files information could be found.");
-      return 4;
+      return 3;
     }
 
     _logger.Information(

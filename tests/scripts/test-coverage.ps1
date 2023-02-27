@@ -1,1 +1,1 @@
-dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:Include="[OnspringAttachmentReporter]*" /p:CoverletOutput=".\TestResults\coverage.json"
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:Include="[OnspringAttachmentReporter]*" /p:ExcludeByFile="**/program.cs" /p:CoverletOutput=".\TestResults\coverage.json"

@@ -10,6 +10,7 @@ public class ContextTests
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
     var logLevel = LogEventLevel.Information;
     var result = new Context(apiKey, appId, outputDirectory, logLevel);
+
     result.Should().NotBeNull();
     result.Should().BeOfType<Context>();
     result.ApiKey.Should().Be("apiKey");
