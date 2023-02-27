@@ -1,7 +1,6 @@
 using System.Globalization;
 
 using CsvHelper;
-using CsvHelper.Configuration;
 
 using FileInfo = OnspringAttachmentReporter.Models.FileInfo;
 
@@ -13,7 +12,38 @@ public class ReportServiceTests
 
   public ReportServiceTests()
   {
-    _context = new Context("apikey", 1, "testOutput", LogEventLevel.Information);
+    var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
+    _context = new Context("apikey", 1, outputDirectory, LogEventLevel.Information);
+  }
+
+  [Fact]
+  public void WriteReport_WhenCalledAndOutputDirectoryDoesExist_ItShouldNotCreateOutputDirectory()
+  {
+    var fileInfos = new List<FileInfo>()
+    {
+      new FileInfo(1, 1, "test", 1, "test", 1000000000),
+    };
+
+    var reportService = new ReportService(
+      new Context("apikey", 1, "111111111111-output", LogEventLevel.Information)
+    );
+
+    var outputDirectoryPath = Path.Combine(
+      AppDomain.CurrentDomain.BaseDirectory,
+      _context.OutputDirectory
+    );
+
+    Directory.CreateDirectory(outputDirectoryPath);
+
+    reportService.WriteReport(fileInfos);
+
+    var outputFilePath = Path.Combine(
+      outputDirectoryPath,
+      "attachment_report.csv"
+    );
+
+    var result = File.Exists(outputFilePath);
+    result.Should().BeTrue();
   }
 
   [Fact]
@@ -27,7 +57,15 @@ public class ReportServiceTests
     var reportService = new ReportService(_context);
 
     reportService.WriteReport(fileInfos);
-    var result = File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _context.OutputDirectory, "attachment_report.csv"));
+
+    var result = File.Exists(
+      Path.Combine(
+        AppDomain.CurrentDomain.BaseDirectory,
+        _context.OutputDirectory,
+        "attachment_report.csv"
+      )
+    );
+
     result.Should().BeTrue();
   }
 
