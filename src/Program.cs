@@ -45,7 +45,7 @@ internal class Program
     return await rootCommand.InvokeAsync(args);
   }
 
-  public async static Task<int> Execute(
+  private async static Task<int> Execute(
     string? apiKeyOption,
     int? appIdOption,
     LogEventLevel logLevelOption,
