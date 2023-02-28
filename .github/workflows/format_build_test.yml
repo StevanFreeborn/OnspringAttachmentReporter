@@ -25,7 +25,7 @@ jobs:
           message: 'fix: resolve format errors'
           committer_name: GitHub Actions
     outputs:
-      committed: ${{ steps.format_commit_outputs.committed }}
+      committed: ${{ steps.format_commit.outputs.committed }}
   build_and_test:
     env:
       TestConfigFilePath: 'testData\testconfig.json'
