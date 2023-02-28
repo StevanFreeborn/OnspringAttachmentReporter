@@ -1,8 +1,11 @@
 # OnspringAttachmentReporter
 
 [![format_build_test](https://github.com/StevanFreeborn/OnspringAttachmentReporter/actions/workflows/format_build_test.yml/badge.svg)](https://github.com/StevanFreeborn/OnspringAttachmentReporter/actions/workflows/format_build_test.yml)
-[![codecov](https://codecov.io/gh/StevanFreeborn/OnspringAttachmentReporter/branch/main/graph/badge.svg?token=3KVEDzmsDe)](https://codecov.io/gh/StevanFreeborn/OnspringAttachmentReporter)
+![Codecov branch](https://img.shields.io/codecov/c/github/StevanFreeborn/OnspringAttachmentReporter/Main)
+[![publish_and_release](https://github.com/StevanFreeborn/OnspringAttachmentReporter/actions/workflows/publish_and_release.yml/badge.svg)](https://github.com/StevanFreeborn/OnspringAttachmentReporter/actions/workflows/publish_and_release.yml)
 ![GitHub](https://img.shields.io/github/license/StevanFreeborn/OnspringAttachmentReporter)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/StevanFreeborn/OnspringAttachmentReporter?include_prereleases)
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 A tool built for helping [Onspring](https://onspring.com/) customers report on the attachments contained within an Onspring app. The tool will produce a report in the form of a `.csv` file that contains information about each attachment in the app.
 
