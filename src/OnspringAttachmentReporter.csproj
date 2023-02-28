@@ -3,7 +3,7 @@
     <AssemblyTitle>OnspringAttachmentReporter</AssemblyTitle>
     <Product>OnspringAttachmentReporter</Product>
     <Description>An app that will report on the attachments contained within an Onspring app.</Description>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <AssemblyVersion>1.0.1</AssemblyVersion>
     <FileVersion>1.0.1</FileVersion>
     <Authors>Stevan Freeborn</Authors>
