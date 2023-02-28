@@ -84,7 +84,7 @@ jobs:
     - name: Run versionize for main
       id: versionize-main
       if: steps.branch-name.outputs.ref_branch == 'main'
-      run: versionize --workingDir ./src
+      run: versionize -i --workingDir ./src
     - name: Upload changelog for main
       if: steps.versionize-main.outcome == 'success'
       uses: actions/upload-artifact@v3
@@ -94,7 +94,7 @@ jobs:
     - name: Run versionize for beta
       id: versionize-beta
       if: steps.branch-name.outputs.ref_branch == 'beta'
-      run: versionize --pre-release beta --workingDir ./src
+      run: versionize -i --pre-release beta --workingDir ./src
     - name: Upload changelog for beta
       if: steps.versionize-beta.outcome == 'success'
       uses: actions/upload-artifact@v3
