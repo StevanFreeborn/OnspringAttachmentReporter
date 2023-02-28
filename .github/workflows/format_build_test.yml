@@ -1,4 +1,4 @@
-name: format_buld_test
+name: format_build_test
 
 on:
   workflow_dispatch:
