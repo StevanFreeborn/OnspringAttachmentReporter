@@ -28,7 +28,7 @@ jobs:
       committed: ${{ steps.format_commit.outputs.committed }}
   build_and_test:
     env:
-      TestConfigFilePath: testData\testconfig.json
+      TestConfigFilePath: testData/testconfig.json
       TestApiKey: ${{ secrets.TEST_API_KEY }}
       TestAppId: ${{ vars.TEST_APP_ID }}
     needs: format
@@ -54,28 +54,28 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Create testData
-        run: mkdir -p tests\testData
+        run: mkdir -p tests/testData
       - name: Create testconfig.json
-        run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests\\testData\\testconfig.json"  
+        run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests/testData/testconfig.json"  
       - name: List root directory structure
         run: ls
       - name: List tests directory structure
         run: ls tests
       - name: List output directory structure
-        run: ls tests\bin\debug\net7.0\
+        run: ls tests/bin/debug/net7.0
       - name: List testData directory structure
-        run: ls tests\bin\debug\net7.0\testData
+        run: ls tests/bin/debug/net7.0/testData
       - name: Build on ${{ matrix.os }}
         run: dotnet build --no-restore
       - name: Test on ${{ matrix.os }}
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
       - name: Rename test coverage report
-        run: mv tests\TestResults\*\coverage.cobertura.xml tests\TestResults\*\${{ matrix.os }}-coverage.cobertura.xml
+        run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/*/${{ matrix.os }}-coverage.cobertura.xml
       - name: Upload test coverage report for ${{ matrix.os }}
         uses: actions/upload-artifact@v3
         with:
           name: test-coverage-${{ matrix.os }}
-          path: tests\TestResults\*\${{ matrix.os }}-coverage.cobertura.xml
+          path: tests/TestResults/*/${{ matrix.os }}-coverage.cobertura.xml
   test_coverage:
     needs: build_and_test
     runs-on: ubuntu-latest
