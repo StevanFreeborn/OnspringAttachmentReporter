@@ -57,18 +57,10 @@ jobs:
         run: mkdir -p tests/testData
       - name: Create testconfig.json
         run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests/testData/testconfig.json"  
-      - name: List root directory structure
-        run: ls
-      - name: List tests directory structure
-        run: ls tests
       - name: Build on ${{ matrix.os }}
         run: dotnet build --no-restore
       - name: Test on ${{ matrix.os }}
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
-      - name: List output directory structure
-        run: ls tests/bin/debug/net7.0
-      - name: List testData directory structure
-        run: ls tests/bin/debug/net7.0/testData
       - name: Rename test coverage report
         run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/*/${{ matrix.os }}-coverage.cobertura.xml
       - name: Upload test coverage report for ${{ matrix.os }}
