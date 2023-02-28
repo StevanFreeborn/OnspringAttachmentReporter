@@ -101,18 +101,16 @@ jobs:
       with:
         name: change-log
         path: src/CHANGELOG.md
-    - name: Commit version changes
-      if: steps.versionize-main.outcome == 'success' || steps.versionize-beta.outcome == 'success'
-      id: version_project
-      uses: EndBug/add-and-commit@v9
+    - name: Push changes to GitHub
+      if: steps.versionize.outcome == 'success'
+      uses: ad-m/github-push-action@master
       with:
-        message: 'chore: update project version'
-        committer_name: GitHub Actions
-    outputs:
-      committed: ${{ steps.version_project.outputs.committed }}
+        github_token: ${{ secrets.ACTIONS_PAT }}
+        branch: ${{ github.ref }}
+        tags: true
   publish:
     needs: [ version ]
-    if: needs.version.outputs.committed == 'true'
+    if: needs.version.result == 'success'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
