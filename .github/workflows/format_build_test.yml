@@ -1,0 +1,93 @@
+name: format_buld_test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with: 
+          token: ${{ secrets.ACTIONS_PAT }}
+      - name: Setup .NET 7
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.x
+      - name: Run dotnet format
+        run: dotnet format
+      - name: Commit any formatting changes
+        id: format_commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'fix: resolve format errors'
+          committer_name: GitHub Actions
+    outputs:
+      committed: ${{ steps.format_commit_outputs.committed }}
+  build_and_test:
+    env:
+      TestConfigFilePath: 'testData\testconfig.json'
+      TestApiKey: ${{ secrets.TEST_API_KEY }}
+      TestAppId: ${{ vars.TEST_APP_ID }}
+    needs: format
+    if: needs.format.outputs.committed == 'false'
+    name: build_and_test
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with: 
+          token: ${{ secrets.ACTIONS_PAT }}
+      - name: Setup .NET 7
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Create testData
+        run: mkdir -p tests\testData
+      - name: Create testconfig.json
+        run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests\testData\testconfig.json"  
+      - name: Build on ${{ matrix.os }}
+        run: dotnet build --no-restore
+      - name: Test on ${{ matrix.os }}
+        run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
+      - name: Rename test coverage report
+        run: mv tests\TestResults\*\coverage.cobertura.xml tests\TestResults\*\${{ matrix.os }}-coverage.cobertura.xml
+      - name: Upload test coverage report for ${{ matrix.os }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage-${{ matrix.os }}
+          path: tests\TestResults\*\${{ matrix.os }}-coverage.cobertura.xml
+  test_coverage:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACTIONS_PAT }}
+      - name: Download ubuntu-latest report
+        uses: actions/download-artifcat@v3
+        with:
+          name: test-coverage-ubuntu-latest
+          path: ./coverage
+      - name: Download windows-latest report
+        uses: actions/download-artifcat@v3
+        with:
+          name: test-coverage-windows-latest
+          path: ./coverage
+      - name: Download macos-latest report
+        uses: actions/download-artifcat@v3
+        with:
+          name: test-coverage-macos-latest
+          path: ./coverage
+      - name: Upload test coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
