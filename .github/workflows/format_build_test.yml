@@ -55,7 +55,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Attempt to create testData directory on linux or mac-os
-        if: matrix.os == 'ubuntu-latest' || if matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: mkdir -p tests/testData
       - name: Attempt to create testData directory on windows
         if: matrix.os == 'windows-latest'
@@ -67,7 +67,7 @@ jobs:
       - name: Test on ${{ matrix.os }}
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
       - name: Attempt to create coverage directory on linux or mac-os
-        if: matrix.os == 'ubuntu-latest' || if matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: mkdir -p tests/TestResults/coverage
       - name: Attempt to create coverage directory on windows
         if: matrix.os == 'windows-latest'
