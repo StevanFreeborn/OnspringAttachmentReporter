@@ -134,7 +134,7 @@ jobs:
     - name: Rename linux-os binary
       run: mv dist/linux-os/OnspringAttachmentReporter dist/OnspringAttachmentReporter_linux_x64
     - name: Publish for windows-os
-      run: dotnet publish src/OnspringAttachmentReporter.csproj -c Release -r win-x64 --self-contained -o ./dist/windows-os
+      run: dotnet publish src/OnspringAttachmentReporter.csproj -c Release -r win-x64 --self-contained -o dist/windows-os
     - name: Rename windows-os binary
       run: mv dist/windows-os/OnspringAttachmentReporter.exe dist/OnspringAttachmentReporter_windows_x64.exe
     - name: Get branch name
@@ -151,30 +151,17 @@ jobs:
         name: change-log
         path: src
     - name: Create release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-          GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+      uses: softprops/action-gh-release@v1
       with:
+        token: ${{ secrets.ACTIONS_PAT }}
+        name: Onspring Attachment Reporter v${{ steps.get-version.outputs.version }}
         tag_name: v${{ steps.get-version.outputs.version }}
-        release_name: OnspringAttachmentReporter v${{ steps.get-version.outputs.version }}
-        body_path: src/CHANGELOG.md
         draft: false
         prerelease: ${{ steps.branch-name.outputs.ref_branch == 'beta' }}
-    - name: Upload mac-os binary to release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/OnspringAttachmentReporter_osx_x64
-    - name: Upload linux-os binary to release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/OnspringAttachmentReporter_linux_x64
-    - name: Upload windows-os binary to release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/OnspringAttachmentReporter_windows_x64
+        body_path: src/CHANGELOG.md
+        files: |
+          dist/OnspringAttachmentReporter_osx_x64
+          dist/OnspringAttachmentReporter_linux_x64
+          dist/OnspringAttachmentReporter_windows_x64.exe
       
 
