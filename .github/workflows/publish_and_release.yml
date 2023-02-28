@@ -109,8 +109,8 @@ jobs:
         branch: ${{ github.ref }}
         tags: true
   publish:
-    needs: [ version ]
-    if: needs.version.result == 'success'
+    # needs: [ version ]
+    # if: needs.version.result == 'success'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -136,7 +136,7 @@ jobs:
     - name: Publish for windows-os
       run: dotnet publish src/OnspringAttachmentReporter.csproj -c Release -r win-x64 --self-contained -o ./dist/windows-os
     - name: Rename windows-os binary
-      run: mv dist/windows-os/OnspringAttachmentReporter dist/OnspringAttachmentReporter_windows_x64
+      run: mv dist/windows-os/OnspringAttachmentReporter.exe dist/OnspringAttachmentReporter_windows_x64.exe
     - name: Get branch name
       id: branch-name
       uses: tj-actions/branch-names@v6
