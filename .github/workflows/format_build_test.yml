@@ -35,8 +35,10 @@ jobs:
     if: needs.format.outputs.committed == 'false'
     name: build_and_test
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
+        
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
