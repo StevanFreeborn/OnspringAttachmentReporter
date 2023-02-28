@@ -66,6 +66,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.ACTIONS_PAT }}
+        fetch-depth: 0
     - name: Initialize git submodules
       run: git submodule update --init --recursive
     - name: Update git submodules
