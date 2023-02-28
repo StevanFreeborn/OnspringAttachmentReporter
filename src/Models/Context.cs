@@ -7,7 +7,12 @@ public class Context : IContext
   public string OutputDirectory { get; }
   public LogEventLevel LogLevel { get; }
 
-  public Context(string? apiKey, int appId, string outputDirectory, LogEventLevel logLevel)
+  public Context(
+    string? apiKey,
+    int appId,
+    string outputDirectory,
+    LogEventLevel logLevel
+  )
   {
     ApiKey = apiKey;
     AppId = appId;

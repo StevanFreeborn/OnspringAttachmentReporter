@@ -7,7 +7,12 @@ public class FileInfoRequest
   public string FieldName { get; set; }
   public int FileId { get; set; }
 
-  public FileInfoRequest(int recordId, int fieldId, string fieldName, int fileId)
+  public FileInfoRequest(
+    int recordId,
+    int fieldId,
+    string fieldName,
+    int fileId
+  )
   {
     RecordId = recordId;
     FieldId = fieldId;
