@@ -56,6 +56,8 @@ jobs:
         run: dotnet build --no-restore
       - name: Run tests
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
+      - name: Make coverage directory
+        run: mkdir -p tests/TestResults/coverage
       - name: Rename test coverage report
         run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/coverage/mac-os-latest-coverage.cobertura.xml
       - name: Upload test coverage report
@@ -91,6 +93,8 @@ jobs:
         run: dotnet build --no-restore
       - name: Run tests
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
+      - name: Make coverage directory
+        run: mkdir -p tests/TestResults/coverage
       - name: Rename test coverage report
         run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/coverage/ubuntu-latest-coverage.cobertura.xml
       - name: Upload test coverage report
@@ -126,6 +130,8 @@ jobs:
         run: dotnet build --no-restore
       - name: Run tests
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
+      - name: Make coverage directory
+        run: mkdir -force tests/TestResults/coverage
       - name: Rename test coverage report
         run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/coverage/windows-latest-coverage.cobertura.xml
       - name: Upload test coverage report
