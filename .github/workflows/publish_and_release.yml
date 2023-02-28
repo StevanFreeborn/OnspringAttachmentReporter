@@ -1,6 +1,13 @@
 name: publish_and_release
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - src/**
+      - lib/**
+    branches:
+      - main
+      - beta
 jobs:
   test:
     env:
