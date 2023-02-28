@@ -79,7 +79,7 @@ jobs:
       run: dotnet tool install --global Versionize
     - name: Setup git
       run: |
-            git config --local user.email "stevan.freeborn@gmail.com"
+            git config --local user.email "65925598+StevanFreeborn@users.noreply.github.com"
             git config --local user.name "Stevan Freeborn"
     - name: Run versionize for main
       id: versionize-main
