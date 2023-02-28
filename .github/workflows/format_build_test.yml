@@ -57,6 +57,14 @@ jobs:
         run: mkdir -p tests\testData
       - name: Create testconfig.json
         run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests\\testData\\testconfig.json"  
+      - name: List root directory structure
+        run: ls
+      - name: List tests directory structure
+        run: ls tests
+      - name: List output directory structure
+        run: ls tests\bin\debug\net7.0\
+      - name: List testData directory structure
+        run: ls tests\bin\debug\net7.0\testData
       - name: Build on ${{ matrix.os }}
         run: dotnet build --no-restore
       - name: Test on ${{ matrix.os }}
