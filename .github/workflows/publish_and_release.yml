@@ -84,7 +84,8 @@ jobs:
     - name: Run versionize for main
       id: versionize-main
       if: steps.branch-name.outputs.ref_branch == 'main'
-      run: versionize -i --workingDir ./src
+      run: versionize -i --exit-insignificant-commits --changelog-all --workingDir ./src
+      continue-on-error: true
     - name: Upload changelog for main
       if: steps.versionize-main.outcome == 'success'
       uses: actions/upload-artifact@v3
@@ -94,7 +95,8 @@ jobs:
     - name: Run versionize for beta
       id: versionize-beta
       if: steps.branch-name.outputs.ref_branch == 'beta'
-      run: versionize -i --pre-release beta --workingDir ./src
+      run: versionize -i --exit-insignificant-commits --changelog-all --pre-release beta --workingDir ./src
+      continue-on-error: true
     - name: Upload changelog for beta
       if: steps.versionize-beta.outcome == 'success'
       uses: actions/upload-artifact@v3
@@ -108,9 +110,11 @@ jobs:
         github_token: ${{ secrets.ACTIONS_PAT }}
         branch: ${{ github.ref }}
         tags: true
+    outputs:
+      is_new_version: ${{ steps.versionize-main.outcome == 'success' || steps.versionize-beta.outcome == 'success' }}
   publish:
     needs: [ version ]
-    if: needs.version.result == 'success'
+    if: needs.version.outputs.is_new_version == 'true'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
