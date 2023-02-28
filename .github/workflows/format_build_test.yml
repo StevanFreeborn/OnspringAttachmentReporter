@@ -1,8 +1,10 @@
 name: format_buld_test
-
 on:
   workflow_dispatch:
-
+env:
+  TestConfigFilePath: testData/testconfig.json
+  TestApiKey: ${{ secrets.TEST_API_KEY }}
+  TestAppId: ${{ vars.TEST_APP_ID }}
 jobs:
   format:
     name: format
@@ -26,20 +28,11 @@ jobs:
           committer_name: GitHub Actions
     outputs:
       committed: ${{ steps.format_commit.outputs.committed }}
-  build_and_test:
-    env:
-      TestConfigFilePath: testData/testconfig.json
-      TestApiKey: ${{ secrets.TEST_API_KEY }}
-      TestAppId: ${{ vars.TEST_APP_ID }}
+  build_and_test_mac_os:
     needs: format
     if: needs.format.outputs.committed == 'false'
-    name: build_and_test
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-        
-    runs-on: ${{ matrix.os }}
+    name: build_and_test_mac_os        
+    runs-on: mac-os-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -59,19 +52,89 @@ jobs:
         run: mkdir -p tests/testData
       - name: Create testconfig.json
         run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests/testData/testconfig.json"  
-      - name: Build on ${{ matrix.os }}
+      - name: Build projects
         run: dotnet build --no-restore
-      - name: Test on ${{ matrix.os }}
+      - name: Run tests
         run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
       - name: Rename test coverage report
-        run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/*/${{ matrix.os }}-coverage.cobertura.xml
-      - name: Upload test coverage report for ${{ matrix.os }}
+        run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/coverage/mac-os-latest-coverage.cobertura.xml
+      - name: Upload test coverage report
         uses: actions/upload-artifact@v3
         with:
-          name: test-coverage-${{ matrix.os }}
-          path: tests/TestResults/*/${{ matrix.os }}-coverage.cobertura.xml
+          name: test-coverage-mac-os-latest
+          path: tests/TestResults/coverage/mac-os-latest-coverage.cobertura.xml
+  build_and_test_linux:
+    needs: format
+    if: needs.format.outputs.committed == 'false'
+    name: build_and_test_linux     
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with: 
+          token: ${{ secrets.ACTIONS_PAT }}
+      - name: Initialize git submodules
+        run: git submodule update --init --recursive
+      - name: Update git submodules
+        run: git submodule update --recursive --remote
+      - name: Setup .NET 7
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Create testData
+        run: mkdir -p tests/testData
+      - name: Create testconfig.json
+        run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests/testData/testconfig.json"  
+      - name: Build projects
+        run: dotnet build --no-restore
+      - name: Run tests
+        run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
+      - name: Rename test coverage report
+        run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/coverage/ubuntu-latest-coverage.cobertura.xml
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage-ubuntu-latest
+          path: tests/TestResults/coverage/ubuntu-latest-coverage.cobertura.xml
+  build_and_test_windows:
+    needs: format
+    if: needs.format.outputs.committed == 'false'
+    name: build_and_test_windows     
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with: 
+          token: ${{ secrets.ACTIONS_PAT }}
+      - name: Initialize git submodules
+        run: git submodule update --init --recursive
+      - name: Update git submodules
+        run: git submodule update --recursive --remote
+      - name: Setup .NET 7
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Create testData
+        run: mkdir -force tests/testData
+      - name: Create testconfig.json
+        run: "echo '{ \"ApiKey\": \"${{ env.TestApiKey }}\", \"AppId\": \"${{ env.TestAppId }}\" }' > tests/testData/testconfig.json"  
+      - name: Build projects
+        run: dotnet build --no-restore
+      - name: Run tests
+        run: dotnet test --collect:"XPlat Code Coverage;Include=[OnspringAttachmentReporter]*"
+      - name: Rename test coverage report
+        run: mv tests/TestResults/*/coverage.cobertura.xml tests/TestResults/coverage/windows-latest-coverage.cobertura.xml
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage-windows-latest
+          path: tests/TestResults/coverage/windows-latest-coverage.cobertura.xml
   test_coverage:
-    needs: build_and_test
+    needs: [ build_and_test_mac_os, build_and_test_windows, build_and_test_linux ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
