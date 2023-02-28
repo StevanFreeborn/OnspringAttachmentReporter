@@ -1,5 +1,9 @@
 # OnspringAttachmentReporter
 
+[![format_build_test](https://github.com/StevanFreeborn/OnspringAttachmentReporter/actions/workflows/format_build_test.yml/badge.svg)](https://github.com/StevanFreeborn/OnspringAttachmentReporter/actions/workflows/format_build_test.yml)
+[![codecov](https://codecov.io/gh/StevanFreeborn/OnspringAttachmentReporter/branch/main/graph/badge.svg?token=3KVEDzmsDe)](https://codecov.io/gh/StevanFreeborn/OnspringAttachmentReporter)
+![GitHub](https://img.shields.io/github/license/StevanFreeborn/OnspringAttachmentReporter)
+
 A tool built for helping [Onspring](https://onspring.com/) customers report on the attachments contained within an Onspring app. The tool will produce a report in the form of a `.csv` file that contains information about each attachment in the app.
 
 _**Note:**_ This is an unofficial Onspring tool. It was not built in consultation with Onspring Technologies LLC or a member of their development team. This tool was developed independently using Onspring's existing [.NET SDK](https://github.com/onspring-technologies/onspring-api-sdk) for the [Onspring API](https://api.onspring.com/swagger/index.html).
