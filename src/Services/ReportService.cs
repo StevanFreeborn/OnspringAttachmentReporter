@@ -36,13 +36,20 @@ public class ReportService : IReportService
   internal string GetReportPath()
   {
     var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-    var outputDirectory = Path.Combine(currentDirectory, _context.OutputDirectory);
+    var outputDirectory = Path.Combine(
+      currentDirectory,
+      _context.OutputDirectory
+    );
 
     if (!Directory.Exists(outputDirectory))
     {
       Directory.CreateDirectory(outputDirectory);
     }
 
-    return Path.Combine(currentDirectory, _context.OutputDirectory, "attachment_report.csv");
+    return Path.Combine(
+      currentDirectory,
+      _context.OutputDirectory,
+      "attachment_report.csv"
+    );
   }
 }
