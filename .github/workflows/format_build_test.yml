@@ -28,7 +28,7 @@ jobs:
       committed: ${{ steps.format_commit.outputs.committed }}
   build_and_test:
     env:
-      TestConfigFilePath: 'tests\testData\testconfig.json'
+      TestConfigFilePath: testData\testconfig.json
       TestApiKey: ${{ secrets.TEST_API_KEY }}
       TestAppId: ${{ vars.TEST_APP_ID }}
     needs: format
