@@ -149,7 +149,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: change-log
-        path: src/CHANGELOG.md
+        path: src
     - name: Create release
       id: create_release
       uses: actions/create-release@v1
