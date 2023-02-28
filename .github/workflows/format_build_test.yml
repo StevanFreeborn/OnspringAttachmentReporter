@@ -88,17 +88,17 @@ jobs:
         with:
           token: ${{ secrets.ACTIONS_PAT }}
       - name: Download ubuntu-latest report
-        uses: actions/download-artifcat@v3
+        uses: actions/download-artifact@v3
         with:
           name: test-coverage-ubuntu-latest
           path: ./coverage
       - name: Download windows-latest report
-        uses: actions/download-artifcat@v3
+        uses: actions/download-artifact@v3
         with:
           name: test-coverage-windows-latest
           path: ./coverage
       - name: Download macos-latest report
-        uses: actions/download-artifcat@v3
+        uses: actions/download-artifact@v3
         with:
           name: test-coverage-macos-latest
           path: ./coverage
