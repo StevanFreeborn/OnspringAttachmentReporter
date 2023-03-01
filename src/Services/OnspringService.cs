@@ -141,7 +141,7 @@ class OnspringService : IOnspringService
         wait
       );
 
-      Thread.Sleep(wait);
+      await Task.Delay(wait);
 
       _logger.Information(
         "Retrying request. {Attempt} of {AttemptLimit}",
