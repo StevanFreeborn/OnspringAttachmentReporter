@@ -14,3 +14,5 @@ global using OnspringAttachmentReporter.Services;
 
 global using Serilog;
 global using Serilog.Events;
+
+global using ShellProgressBar;
