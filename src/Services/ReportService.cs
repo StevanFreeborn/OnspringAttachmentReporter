@@ -29,7 +29,31 @@ public class ReportService : IReportService
     using (var csv = new CsvWriter(writer, config))
     {
       csv.Context.RegisterClassMap<FileInfoMap>();
-      csv.WriteRecords(fileInfos);
+
+      var options = new ProgressBarOptions
+      {
+        ForegroundColor = ConsoleColor.DarkBlue,
+        ProgressCharacter = '─',
+        ShowEstimatedDuration = false,
+      };
+
+      using var progressBar = new ProgressBar(
+        fileInfos.Count,
+        "Writing report...",
+        options
+      );
+
+      csv.WriteHeader<FileInfo>();
+      csv.NextRecord();
+
+      foreach (var fileInfo in fileInfos)
+      {
+        csv.WriteRecord(fileInfo);
+        csv.NextRecord();
+        progressBar.Tick($"Wrote file {fileInfo.FileId} to report.");
+      }
+
+      progressBar.Message = "Finished writing report.";
     };
   }
 

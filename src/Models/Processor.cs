@@ -32,6 +32,19 @@ class Processor : IProcessor
     var currentPage = pagingRequest.PageNumber;
     var fileRequests = new List<FileInfoRequest>();
 
+    var options = new ProgressBarOptions
+    {
+      ForegroundColor = ConsoleColor.DarkBlue,
+      ProgressCharacter = '─',
+      ShowEstimatedDuration = false,
+    };
+
+    using var progressBar = new ProgressBar(
+      totalPages,
+      "Retrieving files whose information needs to be requested...",
+      options
+    );
+
     do
     {
       _logger.Debug(
@@ -39,10 +52,9 @@ class Processor : IProcessor
         currentPage
       );
 
-      var res = await _onspringService.GetAPageOfRecords(fileFieldIds, pagingRequest);
+      progressBar.Message = $"Retrieving files from page {currentPage} of records.";
 
-      pagingRequest.PageNumber++;
-      currentPage = pagingRequest.PageNumber;
+      var res = await _onspringService.GetAPageOfRecords(fileFieldIds, pagingRequest);
 
       if (res == null)
       {
@@ -50,7 +62,7 @@ class Processor : IProcessor
           "No records found for page {PageNumber}.",
           currentPage
         );
-        continue;
+        break;
       }
 
       _logger.Debug(
@@ -59,15 +71,21 @@ class Processor : IProcessor
         res.Items.Count
       );
 
+      totalPages = res.TotalPages;
+
+      progressBar.Tick($"Retrieved files from page {currentPage} of records.");
+
       foreach (var record in res.Items)
       {
         var requests = GetFileRequestsFromRecord(record, fileFields);
         fileRequests.AddRange(requests);
       }
 
-      totalPages = res.TotalPages;
+      pagingRequest.PageNumber++;
+      currentPage = pagingRequest.PageNumber;
     } while (currentPage <= totalPages);
 
+    progressBar.Tick("Finished retrieving files whose information needs to be requested.");
     return fileRequests;
   }
 
@@ -75,12 +93,34 @@ class Processor : IProcessor
   {
     var fileInfos = new ConcurrentBag<FileInfo>();
 
-    await Parallel.ForEachAsync(
-      fileRequests,
-      async (fileRequest, token) => fileInfos.Add(
-        await GetFileInfo(fileRequest)
+    var options = new ProgressBarOptions
+    {
+      ForegroundColor = ConsoleColor.DarkBlue,
+      ProgressCharacter = '─',
+      ShowEstimatedDuration = false,
+    };
+
+    using (
+      var progressBar = new ProgressBar(
+        fileRequests.Count,
+        "Starting to retrieve information for files.",
+        options
       )
-    );
+    )
+    {
+      await Parallel.ForEachAsync(
+        fileRequests,
+        async (fileRequest, token) =>
+        {
+          progressBar.Message = $"Retrieving file info for file {fileRequest.FileId}.";
+          var fileInfo = await GetFileInfo(fileRequest);
+          fileInfos.Add(fileInfo);
+          progressBar.Tick($"Retrieved file info for file {fileRequest.FileId}.");
+        }
+      );
+
+      progressBar.Tick("Finished retrieving information for files.");
+    }
 
     return fileInfos.ToList();
   }

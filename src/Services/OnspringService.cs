@@ -20,8 +20,23 @@ class OnspringService : IOnspringService
     var pagingRequest = new PagingRequest(1, 50);
     var currentPage = pagingRequest.PageNumber;
 
+    var options = new ProgressBarOptions
+    {
+      ForegroundColor = ConsoleColor.DarkBlue,
+      ProgressCharacter = '─',
+      ShowEstimatedDuration = false,
+    };
+
+    using var progressBar = new ProgressBar(
+      totalPages,
+      "Retrieving file fields...",
+      options
+    );
+
     do
     {
+      progressBar.Tick($"Retrieving file fields from page {currentPage} of fields.");
+
       var res = await ExecuteRequest(
         async () => await _client.GetFieldsForAppAsync(
           _context.AppId,
@@ -45,9 +60,13 @@ class OnspringService : IOnspringService
         );
       }
 
+      progressBar.Tick($"Retrieved file fields from page {currentPage} of fields.");
+
       pagingRequest.PageNumber++;
       currentPage = pagingRequest.PageNumber;
     } while (currentPage <= totalPages);
+
+    progressBar.Tick("Finished retrieving file fields.");
 
     return fields;
   }
