@@ -9,7 +9,14 @@ public class ContextTests
     var appId = 1;
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
     var logLevel = LogEventLevel.Information;
-    var result = new Context(apiKey, appId, outputDirectory, logLevel);
+    var filesFilter = new List<int>();
+    var result = new Context(
+      apiKey,
+      appId,
+      outputDirectory,
+      logLevel,
+      filesFilter
+    );
 
     result.Should().NotBeNull();
     result.Should().BeOfType<Context>();
@@ -17,5 +24,6 @@ public class ContextTests
     result.AppId.Should().Be(1);
     result.OutputDirectory.Should().Be(outputDirectory);
     result.LogLevel.Should().Be(logLevel);
+    result.FilesFilter.Should().BeEquivalentTo(filesFilter);
   }
 }

@@ -4,15 +4,22 @@ namespace OnspringAttachmentReporter.Models;
 
 class Processor : IProcessor
 {
+  private readonly IContext _context;
   private readonly IOnspringService _onspringService;
   private readonly IReportService _reportService;
   private readonly ILogger _logger;
 
-  public Processor(IOnspringService onspringService, IReportService reportService, ILogger logger)
+  public Processor(
+    IContext context,
+    IOnspringService onspringService,
+    IReportService reportService,
+    ILogger logger
+  )
   {
     _onspringService = onspringService;
     _reportService = reportService;
     _logger = logger;
+    _context = context;
   }
 
   public async Task<List<Field>> GetFileFields()
@@ -179,7 +186,7 @@ class Processor : IProcessor
   }
 
   [ExcludeFromCodeCoverage]
-  private static List<FileInfoRequest> GetFileRequestsFromRecord(ResultRecord record, List<Field> fileFields)
+  private List<FileInfoRequest> GetFileRequestsFromRecord(ResultRecord record, List<Field> fileFields)
   {
     var fileRequests = new List<FileInfoRequest>();
 
@@ -208,6 +215,14 @@ class Processor : IProcessor
             continue;
           }
 
+          if (
+            _context.FilesFilter.Any() is true &&
+            _context.FilesFilter.Contains(attachment.FileId) is false
+          )
+          {
+            continue;
+          }
+
           fileRequests.Add(
             new FileInfoRequest(
               record.RecordId,
@@ -225,6 +240,14 @@ class Processor : IProcessor
 
         foreach (var file in files)
         {
+          if (
+            _context.FilesFilter.Any() is true &&
+            _context.FilesFilter.Contains(file) is false
+          )
+          {
+            continue;
+          }
+
           fileRequests.Add(
             new FileInfoRequest(
               record.RecordId,

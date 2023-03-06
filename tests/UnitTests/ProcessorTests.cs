@@ -4,12 +4,14 @@ namespace OnspringAttachmentReporterTests.UnitTests;
 
 public class ProcessorTests
 {
+  private readonly Mock<IContext> _contextMock;
   private readonly Mock<IOnspringService> _onspringServiceMock;
   private readonly Mock<IReportService> _reportServiceMock;
   private readonly Mock<ILogger> _loggerMock;
 
   public ProcessorTests()
   {
+    _contextMock = new Mock<IContext>();
     _onspringServiceMock = new Mock<IOnspringService>();
     _reportServiceMock = new Mock<IReportService>();
     _loggerMock = new Mock<ILogger>();
@@ -29,6 +31,7 @@ public class ProcessorTests
     .Returns(fields);
 
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -58,6 +61,7 @@ public class ProcessorTests
     .Returns(fields);
 
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -90,6 +94,7 @@ public class ProcessorTests
     .Returns(fields);
 
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -127,6 +132,7 @@ public class ProcessorTests
     .Returns(fields);
 
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -151,7 +157,12 @@ public class ProcessorTests
     .Setup(m => m.GetAPageOfRecords(new List<int>() { 1, 2 }, new PagingRequest(1, 1)).Result)
     .Returns<GetPagedRecordsResponse?>(null);
 
+    _contextMock
+    .SetupGet(m => m.FilesFilter)
+    .Returns(new List<int>());
+
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -244,7 +255,12 @@ public class ProcessorTests
     .Setup(m => m.GetAPageOfRecords(It.IsAny<List<int>>(), It.IsAny<PagingRequest>()).Result)
     .Returns(res);
 
+    _contextMock
+    .SetupGet(m => m.FilesFilter)
+    .Returns(new List<int>());
+
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -292,6 +308,7 @@ public class ProcessorTests
     .Returns<GetFileResponse?>(null);
 
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -382,6 +399,7 @@ public class ProcessorTests
 
 
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object
@@ -410,6 +428,7 @@ public class ProcessorTests
   public void PrintReport_WhenCalled_ItShouldCallWriteReportOnce()
   {
     var processor = new Processor(
+      _contextMock.Object,
       _onspringServiceMock.Object,
       _reportServiceMock.Object,
       _loggerMock.Object

@@ -13,7 +13,13 @@ public class ReportServiceTests
   public ReportServiceTests()
   {
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
-    _context = new Context("apikey", 1, outputDirectory, LogEventLevel.Information);
+    _context = new Context(
+      "apikey",
+      1,
+      outputDirectory,
+      LogEventLevel.Information,
+      new List<int>()
+    );
   }
 
   [Fact]
@@ -25,7 +31,13 @@ public class ReportServiceTests
     };
 
     var reportService = new ReportService(
-      new Context("apikey", 1, "111111111111-output", LogEventLevel.Information)
+      new Context(
+        "apikey",
+        1,
+        "111111111111-output",
+        LogEventLevel.Information,
+        new List<int>()
+      )
     );
 
     var outputDirectoryPath = Path.Combine(

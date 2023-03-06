@@ -19,42 +19,84 @@ public class ReporterTests
   public void GetContext_WhenCalledAndApiKeyIsNullAndNoConfigIsProvided_ItShouldThrowAnException()
   {
 
-    Action action = () => Reporter.GetContext(null, 1, LogEventLevel.Information, null);
+    Action action = () => Reporter.GetContext(
+      null,
+      1,
+      LogEventLevel.Information,
+      null,
+      null
+    );
+
     action.Should().Throw<Exception>();
   }
 
   [Fact]
   public void GetContext_WhenCalledAndApiKeyIsEmptyAndNoConfigIsProvided_ItShouldThrowAnException()
   {
-    Action action = () => Reporter.GetContext("", 1, LogEventLevel.Information, null);
+    Action action = () => Reporter.GetContext(
+      "",
+      1,
+      LogEventLevel.Information,
+      null,
+      null
+    );
+
     action.Should().Throw<Exception>();
   }
 
   [Fact]
   public void GetContext_WhenCalledAndApiKeyIsWhiteSpaceAndNoConfigIsProvided_ItShouldThrowAnException()
   {
-    Action action = () => Reporter.GetContext(" ", 1, LogEventLevel.Information, null);
+    Action action = () => Reporter.GetContext(
+      " ",
+      1,
+      LogEventLevel.Information,
+      null,
+      null
+    );
+
     action.Should().Throw<Exception>();
   }
 
   [Fact]
   public void GetContext_WhenCalledAndAppIdIsNullAndNoConfigIsProvided_ItShouldThrowAnException()
   {
-    Action action = () => Reporter.GetContext("apiKey", null, LogEventLevel.Information, null);
+    Action action = () => Reporter.GetContext(
+      "apiKey",
+      null,
+      LogEventLevel.Information,
+      null,
+      null
+    );
+
     action.Should().Throw<Exception>();
   }
 
   [Fact]
   public void GetContext_WhenCalledAndApiKeyAppIdAndConfigAreNull_ItShouldThrowAnException()
   {
-    Action action = () => Reporter.GetContext(null, null, LogEventLevel.Information, null);
+    Action action = () => Reporter.GetContext(
+      null,
+      null,
+      LogEventLevel.Information,
+      null,
+      null
+    );
+
     action.Should().Throw<Exception>();
   }
 
   [Fact]
   public void GetContext_WhenCalledAndApiKeyAndAppIdAreProvided_ItShouldReturnAContext()
   {
-    var context = Reporter.GetContext("apiKey", 1, LogEventLevel.Information, null);
+    var context = Reporter.GetContext(
+      "apiKey",
+      1,
+      LogEventLevel.Information,
+      null,
+      null
+    );
+
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
     context.Should().NotBeNull();
     context.ApiKey.Should().Be("apiKey");
@@ -66,7 +108,14 @@ public class ReporterTests
   [Fact]
   public void GetContext_WhenCalledAndApiKeyAppIdAndConfigAreProvided_ItShouldReturnAContextAccordingToApiKeyAndAppId()
   {
-    var context = Reporter.GetContext("apiKey", 1, LogEventLevel.Information, "config.json");
+    var context = Reporter.GetContext(
+      "apiKey",
+      1,
+      LogEventLevel.Information,
+      "config.json",
+      null
+    );
+
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
     context.Should().NotBeNull();
     context.ApiKey.Should().Be("apiKey");
@@ -78,7 +127,14 @@ public class ReporterTests
   [Fact]
   public void GetContext_WhenCalledAndConfigIsProvidedWithoutAppIdAndApiKey_ItShouldReturnAContext()
   {
-    var context = Reporter.GetContext(null, null, LogEventLevel.Information, "./testData/config.valid.json");
+    var context = Reporter.GetContext(
+      null,
+      null,
+      LogEventLevel.Information,
+      "./testData/config.valid.json",
+      null
+    );
+
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
     context.Should().NotBeNull();
     context.ApiKey.Should().Be("apiKey");
@@ -92,7 +148,14 @@ public class ReporterTests
   [InlineData("./testData/config.null.json")]
   public void GetContext_WhenCalledAndInvalidConfigIsProvided_ItShouldThrowAnException(string configFilePath)
   {
-    Action action = () => Reporter.GetContext(null, null, LogEventLevel.Information, configFilePath);
+    Action action = () => Reporter.GetContext(
+      null,
+      null,
+      LogEventLevel.Information,
+      configFilePath,
+      null
+    );
+
     action.Should().Throw<Exception>();
   }
 
