@@ -1,5 +1,7 @@
 ﻿using OnspringAttachmentReporter.Extensions;
 
+using FileInfo = System.IO.FileInfo;
+
 internal class Program
 {
   internal static async Task<int> Main(string[] args)
@@ -26,12 +28,33 @@ internal class Program
       getDefaultValue: () => LogEventLevel.Information
     );
 
+    var filesFilterCsvOption = new Option<FileInfo>(
+      aliases: new string[] { "--filesFilterCsv", "-ffcsv" },
+      description: "The path to the file that specifies a list of files to report on."
+    );
+
+    filesFilterCsvOption.AddValidator(
+      result =>
+      {
+        var value = result.GetValueOrDefault<FileInfo>();
+
+        if (
+          value is not null &&
+          value.Exists is false
+        )
+        {
+          result.ErrorMessage = $"The file {value.FullName} does not exist.";
+        }
+      }
+    );
+
     var rootCommand = new RootCommand("An app that will report on all attachments in a given Onspring app.")
     {
       apiKeyOption,
       appIdOption,
       configFileOption,
-      logLevelOption
+      logLevelOption,
+      filesFilterCsvOption
     };
 
     rootCommand.SetHandler(
@@ -39,7 +62,8 @@ internal class Program
       apiKeyOption,
       appIdOption,
       logLevelOption,
-      configFileOption
+      configFileOption,
+      filesFilterCsvOption
     );
 
     return await rootCommand.InvokeAsync(args);
@@ -49,13 +73,20 @@ internal class Program
     string? apiKeyOption,
     int? appIdOption,
     LogEventLevel logLevelOption,
-    string? configFileOption
+    string? configFileOption,
+    FileInfo? filesFilterCsvOption
   )
   {
     try
     {
       return await Reporter
-      .GetContext(apiKeyOption, appIdOption, logLevelOption, configFileOption)
+      .GetContext(
+        apiKeyOption,
+        appIdOption,
+        logLevelOption,
+        configFileOption,
+        filesFilterCsvOption
+      )
       .ConfigureServices()
       .BuildServiceProvider()
       .GetRequiredService<Reporter>()
@@ -63,7 +94,7 @@ internal class Program
     }
     catch (Exception e)
     {
-      Console.WriteLine(e.Message);
+      Console.WriteLine(e);
       return 1;
     }
   }

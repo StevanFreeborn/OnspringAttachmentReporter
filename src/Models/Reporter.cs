@@ -1,3 +1,5 @@
+
+
 namespace OnspringAttachmentReporter.Models;
 
 public class Reporter
@@ -85,17 +87,37 @@ public class Reporter
     string? apiKeyOption,
     int? appIdOption,
     LogEventLevel logLevelOption,
-    string? configFileOption
+    string? configFileOption,
+    System.IO.FileInfo? filesFilterCsv
   )
   {
     var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
+    var filesFilter = new List<int>();
+
+    if (filesFilterCsv is not null)
+    {
+      var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+      {
+        HasHeaderRecord = false,
+      };
+      using var reader = new StreamReader(filesFilterCsv.FullName);
+      using var csv = new CsvReader(reader, config);
+      var fileIds = csv.GetRecords<int>();
+      filesFilter.AddRange(fileIds);
+    }
 
     if (
       string.IsNullOrWhiteSpace(apiKeyOption) is false &&
       appIdOption is not null
     )
     {
-      return new Context(apiKeyOption!, appIdOption.Value, outputDirectory, logLevelOption);
+      return new Context(
+        apiKeyOption!,
+        appIdOption.Value,
+        outputDirectory,
+        logLevelOption,
+        filesFilter
+      );
     }
 
     if (string.IsNullOrWhiteSpace(configFileOption) is false)
@@ -113,7 +135,13 @@ public class Reporter
         int.TryParse(appId, out var appIdInt) is true
       )
       {
-        return new Context(apiKey, appIdInt, outputDirectory, logLevelOption);
+        return new Context(
+          apiKey,
+          appIdInt,
+          outputDirectory,
+          logLevelOption,
+          filesFilter
+        );
       }
     }
 

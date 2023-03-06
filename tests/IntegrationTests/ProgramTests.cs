@@ -102,5 +102,41 @@ namespace OnspringAttachmentReporterTests.IntegrationTests
       var result = await Program.Main(args);
       result.Should().Be(0);
     }
+
+    [Fact]
+    public async Task Main_WhenCalledWithNonExistentFileFilterCsvOption_ItShouldReturnNonZero()
+    {
+      var configFilePath = _configuration["TestConfigFilePath"];
+      configFilePath.Should().NotBeNullOrEmpty();
+
+      var args = new string[]
+      {
+        "-c",
+        configFilePath!,
+        "-ffcsv",
+        "non-existent-file.csv"
+      };
+
+      var result = await Program.Main(args);
+      result.Should().NotBe(0);
+    }
+
+    [Fact]
+    public async Task Main_WhenCalledWithValidConfigAndFilterFileCsvThatFiltersDownToNoFileRequests_ItShouldReturnNonZero()
+    {
+      var configFilePath = _configuration["TestConfigFilePath"];
+      configFilePath.Should().NotBeNullOrEmpty();
+
+      var args = new string[]
+      {
+        "-c",
+        configFilePath!,
+        "-ffcsv",
+        "testData/fileFilter.csv"
+      };
+
+      var result = await Program.Main(args);
+      result.Should().NotBe(0);
+    }
   }
 }

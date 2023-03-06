@@ -6,4 +6,5 @@ public interface IContext
   int AppId { get; }
   string OutputDirectory { get; }
   LogEventLevel LogLevel { get; }
+  List<int> FilesFilter { get; }
 }

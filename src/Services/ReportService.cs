@@ -1,8 +1,3 @@
-using System.Globalization;
-
-using CsvHelper;
-using CsvHelper.Configuration;
-
 using FileInfo = OnspringAttachmentReporter.Models.FileInfo;
 
 namespace OnspringAttachmentReporter.Services;

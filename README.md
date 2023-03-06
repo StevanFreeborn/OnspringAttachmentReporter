@@ -125,6 +125,11 @@ This tool currently has a number of options that can be passed as command-line a
   - By default this will be set to the `Information` level.
   - The valid levels are: `Debug` | `Error` | `Fatal` | `Information` | `Verbose` | `Warning`
   - **Example usage:** `OnspringAttachmentTransferrer.exe -l Debug`
+- **Files Filter Csv:** `--filesFilterCsv` or `-ffcsv`
+  - Allows you to specify what files to include in the report by providing a path to a `.csv` file that contains a list of file ids.
+  - Note files with ids not included in the provided `.csv` file will not be included in the report.
+  - Note your csv file should _**NOT**_ contain a header row.
+  - **Example usage:** `OnspringAttachmentTransferrer.exe -ffcsv files.csv`
 
 ## Output
 
@@ -152,6 +157,8 @@ The tool will generate a report that contains information about the attachments 
 - **File Size (MiB):** The size of the file in mebibytes (1024 kibibytes).
 - **File Size (GB):** The size of the file in gigabytes.
 - **File Size (GiB):** The size of the file in gibibytes (1024 mebibytes).
+
+**Note:** If the tool encounters an error retrieving a files information it will be logged to the console and the log file. And an entry will be made into the csv file for the record with the file name replaced with the text `Error: Unable to get file info` and the file size set to zero. If you want to attempt to request these specific files again you should be able to use the `Files Filter Csv` option to provide these files' ids in a `.csv` to the tool and it will only attempt to retrieve information for those files.
 
 ### Log
 

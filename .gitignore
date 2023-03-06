@@ -14,6 +14,7 @@ testconfig.json
 appsettings.*.json
 dist/
 **/CHANGELOG.md
+src/fileids.csv
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
