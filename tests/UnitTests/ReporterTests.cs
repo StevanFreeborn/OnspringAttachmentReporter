@@ -160,6 +160,30 @@ public class ReporterTests
   }
 
   [Fact]
+  public void GetContext_WhenCalledWithFileFilterCsvOption_ItShouldReturnContextThatIncludesListOfFileIdsFromTheCsvFile()
+  {
+    var fileFilterFile = new System.IO.FileInfo("./testData/fileFilter.csv");
+
+    var context = Reporter.GetContext(
+      null,
+      null,
+      LogEventLevel.Information,
+      "./testData/config.valid.json",
+      fileFilterFile
+    );
+
+    var outputDirectory = $"{DateTime.Now:yyyyMMddHHmm}-output";
+    context.Should().NotBeNull();
+    context.ApiKey.Should().Be("apiKey");
+    context.AppId.Should().Be(1);
+    context.LogLevel.Should().Be(LogEventLevel.Information);
+    context.OutputDirectory.Should().Be(outputDirectory);
+    context.FilesFilter.Should().NotBeNull();
+    context.FilesFilter.Count.Should().Be(1);
+    context.FilesFilter.Should().BeEquivalentTo(new List<int> { 1 });
+  }
+
+  [Fact]
   public async Task Run_WhenCalledAndFileInfoIsFound_ItShouldReturnZero()
   {
     var fileFields = new List<Field>

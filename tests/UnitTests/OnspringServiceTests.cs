@@ -17,7 +17,7 @@ public class OnspringServiceTests
   }
 
   [Fact]
-  public async Task GetAllFields_WhenCalledAndNoFieldsAreFound_ShouldReturnAnEmptyList()
+  public async Task GetAllFields_WhenCalledAndNoFieldsAreFound_ItShouldReturnAnEmptyList()
   {
     var apiResponse = new ApiResponse<GetPagedFieldsResponse>
     {
@@ -47,7 +47,7 @@ public class OnspringServiceTests
   }
 
   [Fact]
-  public async Task GetAllFields_WhenCalledAndOnePageOfFieldsAreFound_ShouldReturnAListOfFields()
+  public async Task GetAllFields_WhenCalledAndOnePageOfFieldsAreFound_ItShouldReturnAListOfFields()
   {
     var apiResponse = new ApiResponse<GetPagedFieldsResponse>
     {
@@ -103,7 +103,7 @@ public class OnspringServiceTests
   }
 
   [Fact]
-  public async Task GetAllFields_WhenCalledAndMultiplePagesOfFieldsAreFound_ShouldReturnAListOfFields()
+  public async Task GetAllFields_WhenCalledAndMultiplePagesOfFieldsAreFound_ItShouldReturnAListOfFields()
   {
     var pageOne = new ApiResponse<GetPagedFieldsResponse>
     {
@@ -260,7 +260,55 @@ public class OnspringServiceTests
   }
 
   [Fact]
-  public async Task GetAPageOfRecords_WhenCalledAndOnePageOfRecordsAreFound_ShouldReturnAListOfRecords()
+  public async Task GetAllFields_WhenCalledAndExceptionIsThrown_ItShouldReturnAnEmptyList()
+  {
+    _mockClient
+    .Setup(m => m.GetFieldsForAppAsync(It.IsAny<int>(), It.IsAny<PagingRequest>()).Result)
+    .Throws(new Exception("Test Exception"));
+
+    var service = new OnspringService(
+      _mockContext.Object,
+      _mockClient.Object,
+      _mockLogger.Object
+    );
+
+    var result = await service.GetAllFields();
+
+    result.Should().BeEmpty();
+    result.Should().BeOfType<List<Field>>();
+    _mockClient.Verify(
+      m => m.GetFieldsForAppAsync(It.IsAny<int>(), It.IsAny<PagingRequest>()),
+      Times.Exactly(1)
+    );
+  }
+
+  [Fact]
+  public async Task GetAllFields_WhenCalledAndHttpRequestExceptionOrTaskCanceledExceptionIsThrown_ItShouldReturnAnEmptyListAfterRetryingThreeTimes()
+  {
+    _mockClient
+    .SetupSequence(m => m.GetFieldsForAppAsync(It.IsAny<int>(), It.IsAny<PagingRequest>()).Result)
+    .Throws(new HttpRequestException("Test Exception"))
+    .Throws(new TaskCanceledException("Test Exception"))
+    .Throws(new TaskCanceledException("Test Exception"));
+
+    var service = new OnspringService(
+      _mockContext.Object,
+      _mockClient.Object,
+      _mockLogger.Object
+    );
+
+    var result = await service.GetAllFields();
+
+    result.Should().BeEmpty();
+    result.Should().BeOfType<List<Field>>();
+    _mockClient.Verify(
+      m => m.GetFieldsForAppAsync(It.IsAny<int>(), It.IsAny<PagingRequest>()),
+      Times.Exactly(3)
+    );
+  }
+
+  [Fact]
+  public async Task GetAPageOfRecords_WhenCalledAndOnePageOfRecordsAreFound_ItShouldReturnAListOfRecords()
   {
     var apiResponse = new ApiResponse<GetPagedRecordsResponse>
     {
@@ -362,7 +410,53 @@ public class OnspringServiceTests
   }
 
   [Fact]
-  public async Task GetFile_WhenCalledAndFileIsFound_ShouldReturnAFile()
+  public async Task GetAPageOfRecords_WhenCalledAndExceptionIsThrown_ItShouldReturnNull()
+  {
+    _mockClient
+    .Setup(m => m.GetRecordsForAppAsync(It.IsAny<GetRecordsByAppRequest>()).Result)
+    .Throws(new Exception("Test Exception"));
+
+    var service = new OnspringService(
+      _mockContext.Object,
+      _mockClient.Object,
+      _mockLogger.Object
+    );
+
+    var result = await service.GetAPageOfRecords(It.IsAny<List<int>>(), It.IsAny<PagingRequest>());
+
+    result.Should().BeNull();
+    _mockClient.Verify(
+      m => m.GetRecordsForAppAsync(It.IsAny<GetRecordsByAppRequest>()),
+      Times.Exactly(1)
+    );
+  }
+
+  [Fact]
+  public async Task GetAPageOfRecords_WhenCalledAndHttpRequestOrTaskExceptionIsThrown_ItShouldReturnNullAfterRetryingThreeTimes()
+  {
+    _mockClient
+    .SetupSequence(m => m.GetRecordsForAppAsync(It.IsAny<GetRecordsByAppRequest>()).Result)
+    .Throws(new HttpRequestException("Test Exception"))
+    .Throws(new TaskCanceledException("Test Exception"))
+    .Throws(new HttpRequestException("Test Exception"));
+
+    var service = new OnspringService(
+      _mockContext.Object,
+      _mockClient.Object,
+      _mockLogger.Object
+    );
+
+    var result = await service.GetAPageOfRecords(It.IsAny<List<int>>(), It.IsAny<PagingRequest>());
+
+    result.Should().BeNull();
+    _mockClient.Verify(
+      m => m.GetRecordsForAppAsync(It.IsAny<GetRecordsByAppRequest>()),
+      Times.Exactly(3)
+    );
+  }
+
+  [Fact]
+  public async Task GetFile_WhenCalledAndFileIsFound_ItShouldReturnAFile()
   {
     var apiResponse = new ApiResponse<GetFileResponse>
     {
@@ -418,6 +512,52 @@ public class OnspringServiceTests
     .Returns(apiResponse)
     .Returns(apiResponse)
     .Returns(apiResponse);
+
+    var service = new OnspringService(
+      _mockContext.Object,
+      _mockClient.Object,
+      _mockLogger.Object
+    );
+
+    var result = await service.GetFile(new FileInfoRequest(1, 1, "test", 1));
+
+    result.Should().BeNull();
+    _mockClient.Verify(
+      m => m.GetFileAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()),
+      Times.Exactly(3)
+    );
+  }
+
+  [Fact]
+  public async Task GetFile_WhenCalledAndExceptionIsThrown_ItShouldReturnNull()
+  {
+    _mockClient
+    .Setup(m => m.GetFileAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()).Result)
+    .Throws(new Exception("Test Exception"));
+
+    var service = new OnspringService(
+      _mockContext.Object,
+      _mockClient.Object,
+      _mockLogger.Object
+    );
+
+    var result = await service.GetFile(new FileInfoRequest(1, 1, "test", 1));
+
+    result.Should().BeNull();
+    _mockClient.Verify(
+      m => m.GetFileAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()),
+      Times.Exactly(1)
+    );
+  }
+
+  [Fact]
+  public async Task GetFile_WhenCalledAndHttpRequestOrTaskCanceledExceptionIsThrown_ItShouldReturnNullAfterAttemptingThreeTimes()
+  {
+    _mockClient
+    .SetupSequence(m => m.GetFileAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()).Result)
+    .Throws(new HttpRequestException("Test Exception"))
+    .Throws(new TaskCanceledException("Test Exception"))
+    .Throws(new TaskCanceledException("Test Exception"));
 
     var service = new OnspringService(
       _mockContext.Object,
