@@ -8,9 +8,9 @@ on:
       - '**/.gitmodules'
       - '**/.editorconfig'
       - '**/OnspringAttachmentReporter.sln'
-      - .github/
-      - .vscode/
-      - README/
+      - .github/**
+      - .vscode/**
+      - README/**
     branches:
       - main
       - beta
