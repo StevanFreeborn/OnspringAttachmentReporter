@@ -4,9 +4,16 @@ on:
   push:
     paths-ignore:
       - src/OnspringAttachmentReporter.csproj
-    paths:
-      - src/**
-      - lib/**
+      - .github/**
+      - .vscode/**
+      - README/**
+      - tests/**
+      - '**/.editorconfig'
+      - '**/.gitignore'
+      - '**/.gitmodules'
+      - '**/LICENSE.txt'
+      - '**/OnspringAttachmentReporter.sln'
+      - '**/README.md'
     branches:
       - main
       - beta
